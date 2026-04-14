@@ -238,8 +238,11 @@ export default function Navbar() {
               <div style={{ position: 'relative' }} className="sl-desktop-only">
                 <Link to="/account" className="sl-icon-btn"
                   style={{ display: 'flex', alignItems: 'center', gap: '6px', color: textColor, textDecoration: 'none', transition: 'color 0.4s' }}>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #8A4FB1, #5B21B6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, color: '#FFF' }}>{user.first_name?.[0]?.toUpperCase() || '?'}</span>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #8A4FB1, #5B21B6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden', border: '1.5px solid rgba(138,79,177,0.3)' }}>
+                    {user.avatar
+                      ? <img src={user.avatar} alt={user.first_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, color: '#FFF' }}>{user.first_name?.[0]?.toUpperCase() || '?'}</span>
+                    }
                   </div>
                   <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: textColor, transition: 'color 0.4s' }}>
                     {user.first_name}
