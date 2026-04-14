@@ -16,6 +16,7 @@ import GiftIdeaPage from './pages/GiftIdeaPage'
 import OrderSuccessPage from './pages/Ordersuccesspage'
 import { useEffect } from 'react'
 import { useAuth } from './store/authStore'
+import AccountEditPage from './pages/AccountEditPage'
 
 
 
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/giftideas"                     element={<GiftIdeaPage />} />
           <Route path="/order-success"                element={<OrderSuccessPage />} />
           <Route path="*"                              element={<NotFoundPage />} />
+          <Route path="/account/edit"                 element={<AccountEditPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
