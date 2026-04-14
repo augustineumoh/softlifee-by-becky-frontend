@@ -17,7 +17,7 @@ interface AuthState {
 
 export const useAuth = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user:            null,
       isAuthenticated: false,
       isLoading:       false,
@@ -43,7 +43,7 @@ export const useAuth = create<AuthState>()(
           tokens.set(res.tokens.access, res.tokens.refresh)
           set({ user: res.user, isAuthenticated: true, isLoading: false })
         } catch (err: any) {
-          const msg = (Object.values(err as Record<string, string[]>)?.[0])?.[0] || err?.error || 'Registration failed'
+          const msg = Object.values(err)?.[0]?.[0] || err?.error || 'Registration failed'
           set({ error: String(msg), isLoading: false })
           throw err
         }
@@ -59,7 +59,8 @@ export const useAuth = create<AuthState>()(
         if (!tokens.access) return
         try {
           const user = await authAPI.getProfile()
-          set({ user, isAuthenticated: true })
+          // Force full replacement so avatar and all fields update everywhere
+          set({ user: { ...user }, isAuthenticated: true })
         } catch {
           tokens.clear()
           set({ user: null, isAuthenticated: false })
