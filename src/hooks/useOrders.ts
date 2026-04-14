@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { ordersAPI, type Order, type CreateOrderData, type CreateOrderResponse } from '../services/api'
+import { tokens } from '../services/api'
 
 // ── Hook: create order ────────────────────────────────────────────────────────
 export function useCreateOrder() {
@@ -31,9 +32,27 @@ export function useOrders() {
   const [error,   setError]   = useState<string | null>(null)
 
   useEffect(() => {
+    // Don't even try if not logged in
+    if (!tokens.access) {
+      setLoading(false)
+      setOrders([])
+      return
+    }
+
     ordersAPI.getMyOrders()
-      .then(setOrders)
-      .catch(() => setError('Failed to load orders.'))
+      .then(data => {
+        // Safety check — ensure we always set an array
+        setOrders(Array.isArray(data) ? data : [])
+      })
+      .catch((err) => {
+        // 401 = not authenticated — just set empty array silently
+        if (err?.status === 401 || err?.detail?.includes('401')) {
+          setOrders([])
+        } else {
+          setError('Failed to load orders.')
+        }
+        setOrders([])
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -60,10 +79,10 @@ export function useVerifyPayment(reference: string | null) {
 
 // ── Hook: discount code validation ───────────────────────────────────────────
 export function useDiscount() {
-  const [loading,    setLoading]    = useState(false)
-  const [discount,   setDiscount]   = useState<any | null>(null)
-  const [error,      setError]      = useState<string | null>(null)
-  const [appliedCode,setAppliedCode]= useState('')
+  const [loading,     setLoading]     = useState(false)
+  const [discount,    setDiscount]    = useState<any | null>(null)
+  const [error,       setError]       = useState<string | null>(null)
+  const [appliedCode, setAppliedCode] = useState('')
 
   const validate = async (code: string, subtotal: number) => {
     if (!code.trim()) return

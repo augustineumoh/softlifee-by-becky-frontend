@@ -19,8 +19,10 @@ const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
 export default function AccountPage() {
   const navigate = useNavigate()
   const { user, isAuthenticated, logout } = useAuth()
-  const { orders, loading: ordersLoading } = useOrders()
-  const { items: wishlistItems } = useWishlist()
+  const { orders: ordersRaw, loading: ordersLoading } = useOrders()
+  const orders = Array.isArray(ordersRaw) ? ordersRaw : []
+  const { items: wishlistItemsRaw } = useWishlist()
+  const wishlistItems = Array.isArray(wishlistItemsRaw) ? wishlistItemsRaw : []
   const [activeTab, setActiveTab] = useState('orders')
 
   useEffect(() => {
