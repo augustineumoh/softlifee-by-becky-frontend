@@ -14,8 +14,17 @@ import ContactPage from './pages/ContactPage'
 import NotFoundPage from './pages/notFoundPage'
 import GiftIdeaPage from './pages/GiftIdeaPage'
 import OrderSuccessPage from './pages/Ordersuccesspage'
+import { useEffect } from 'react'
+import { useAuth } from './store/authStore'
+
+
 
 export default function App() {
+   const { loadUser } = useAuth()
+  
+  useEffect(() => {
+    loadUser() // restore session on page refresh
+  }, [])
   return (
     <BrowserRouter>
       <Routes>

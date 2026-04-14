@@ -270,7 +270,7 @@ function AccordionItem({ title, children, defaultOpen = false }: { title: string
 }
 
 // ── Video player thumbnail ────────────────────────────────────────────────────
-function VideoThumb({ src, poster, isActive, onClick }: { src: string; poster?: string; isActive: boolean; onClick: () => void }) {
+function VideoThumb({ src: _src, poster, isActive, onClick }: { src: string; poster?: string; isActive: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick}
       style={{ width: '72px', height: '72px', borderRadius: '8px', overflow: 'hidden', border: `2px solid ${isActive ? '#8A4FB1' : 'transparent'}`, padding: 0, cursor: 'pointer', background: '#1A1A2E', flexShrink: 0, position: 'relative', transition: 'border-color 0.2s' }}>

@@ -253,8 +253,10 @@ export default function GiftIdeasPage() {
   useEffect(() => {
     const hash = window.location.hash.replace('#', '')
     if (hash) {
-      setActiveNav(hash)
-      setTimeout(() => scrollToId(hash, false), 300)
+      setTimeout(() => {
+        setActiveNav(hash)
+        scrollToId(hash, false)
+      }, 300)
     }
   }, [])
 
@@ -307,7 +309,7 @@ export default function GiftIdeasPage() {
             Curated with intention. Every gift in this guide is handpicked to make someone feel truly seen — whether it's a treat for her, him, the home, or a luxury splurge.
           </p>
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <button onClick={e => handleNavClick(e as any, 'her')}
+            <button onClick={e => handleNavClick(e, 'her')}
               style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#1A1A2E', background: '#D4AF37', border: 'none', padding: '0.9rem 2rem', borderRadius: '2px', cursor: 'pointer', transition: 'all 0.3s', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               onMouseEnter={e => { e.currentTarget.style.background = '#8A4FB1'; e.currentTarget.style.color = '#FFF' }}
               onMouseLeave={e => { e.currentTarget.style.background = '#D4AF37'; e.currentTarget.style.color = '#1A1A2E' }}>

@@ -88,7 +88,6 @@ export default function HeroSection() {
     }
   }, [])
 
-  useEffect(() => { setProgress(0) }, [current])
 
   const slide    = slides[current]
   const prevSlide= prev !== null ? slides[prev] : null
@@ -102,14 +101,14 @@ export default function HeroSection() {
       {/* PREV SLIDE */}
       {prevSlide && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 1, animation: 'sl-fadeOut 1s ease forwards' }}>
-          <img src={prevSlide.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }} />
+          <img src={prevSlide.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.55 }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom,rgba(0,0,0,0.15) 0%,rgba(26,10,46,0.6) 100%)' }} />
         </div>
       )}
 
       {/* CURRENT SLIDE */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 2, animation: 'sl-zoomIn 6s ease forwards' }}>
-        <img key={slide.id} src={slide.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.75, animation: 'sl-imgFadeIn 1s ease forwards' }} />
+        <img key={slide.id} src={slide.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.55, animation: 'sl-imgFadeIn 1s ease forwards' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom,rgba(26,10,46,0.2) 0%,rgba(26,10,46,0.35) 50%,rgba(26,10,46,0.75) 100%)' }} />
         <div style={{
           position: 'absolute', inset: 0,
@@ -122,7 +121,7 @@ export default function HeroSection() {
       </div>
 
       {/* PURPLE GRAIN */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none', opacity: 0.04,
+      <div style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none', opacity: 0.02,
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
         backgroundSize: '180px 180px',
       }} />

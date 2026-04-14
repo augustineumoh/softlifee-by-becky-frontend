@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
 
 function useInView(threshold = 0.12) {
   const ref = useRef<HTMLDivElement>(null)
