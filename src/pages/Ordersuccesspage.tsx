@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { FiCheck, FiPackage, FiMail } from 'react-icons/fi'
 import { useVerifyPayment } from '../hooks/useOrders'

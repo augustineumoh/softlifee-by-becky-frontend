@@ -33,7 +33,7 @@ const STEPS = ['Delivery', 'Payment', 'Review']
 export default function CheckoutPage() {
   const navigate  = useNavigate()
   const { items, clearCart } = useCart()
-  const { user, isAuthenticated } = useAuth()
+  const { user } = useAuth()
   const { createOrder, loading: orderLoading, error: orderError } = useCreateOrder()
   const { validate: validateDiscount, clear: clearDiscount, discount, loading: discountLoading, error: discountError, appliedCode } = useDiscount()
 
@@ -86,7 +86,7 @@ export default function CheckoutPage() {
       items: items.map(i => ({
         product_id:    i.id,
         quantity:      i.quantity,
-        color_variant: i.colorVariant || '',
+        color_variant: (i as any).colorVariant || '',
       })),
     }
 
