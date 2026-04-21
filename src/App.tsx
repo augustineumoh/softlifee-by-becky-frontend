@@ -22,9 +22,14 @@ import AccountEditPage from './pages/AccountEditPage'
 
 export default function App() {
    const { loadUser } = useAuth()
-  
+
   useEffect(() => {
     loadUser() // restore session on page refresh
+
+    // Ping the API on first load to wake up the Railway server so images
+    // and product data don't suffer a cold-start delay when the user navigates.
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
+    fetch(`${API_BASE}/products/?page=1`, { method: 'GET' }).catch(() => {})
   }, [])
   return (
     <BrowserRouter>

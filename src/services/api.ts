@@ -303,8 +303,8 @@ export interface Product {
   id:            number
   name:          string
   slug:          string
-  category:      string
-  subcategory:   string | null
+  category:      string | { id: number; name: string; slug: string }
+  subcategory:   string | { id: number; name: string; slug: string } | null
   price:         string
   badge:         string
   badge_display: string

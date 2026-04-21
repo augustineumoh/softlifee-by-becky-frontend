@@ -1,10 +1,51 @@
-import { useState } from 'react'
+import { useState, Component } from 'react'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { FiHeart, FiShoppingBag } from 'react-icons/fi'
 import { useProducts, useCategories } from '../hooks/useProducts'
 import { useWishlist } from '../hooks/useWishlist'
 import { useCart } from '../store/cartStore'
 import type { Product, ProductFilters } from '../services/api'
+
+// ── Error Boundary ─────────────────────────────────────────────────────────────
+class ProductGridErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; message: string }> {
+  constructor(props: { children: ReactNode }) {
+    super(props)
+    this.state = { hasError: false, message: '' }
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, message: error.message }
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ textAlign: 'center', padding: '4rem' }}>
+          <p style={{ fontFamily: '"Cormorant Garamond",serif', fontStyle: 'italic', fontSize: '1.5rem', color: '#8A4FB1' }}>
+            Something went wrong loading products.
+          </p>
+          <p style={{ fontFamily: '"Jost",sans-serif', fontSize: '0.75rem', color: 'rgba(26,26,46,0.5)', marginTop: '0.5rem' }}>
+            {this.state.message}
+          </p>
+          <button onClick={() => this.setState({ hasError: false, message: '' })}
+            style={{ marginTop: '1rem', fontFamily: '"Jost",sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', padding: '0.75rem 1.5rem', background: '#8A4FB1', color: '#FFF', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
+            Try Again
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
+
+// Helper: safely extract category name whether API returns string or nested object
+function getCategoryLabel(category: unknown): string {
+  if (!category) return ''
+  if (typeof category === 'string') return category
+  if (typeof category === 'object' && category !== null && 'name' in category) {
+    return String((category as { name: unknown }).name)
+  }
+  return ''
+}
 
 const formatPrice = (n: string | number) => '₦' + Number(n).toLocaleString('en-NG')
 
@@ -31,10 +72,12 @@ function ProductCard({ product }: { product: Product }) {
   const wishlisted = isWishlisted(product.slug)
   const imgSrc = product.primary_image?.image || ''
 
+  const categoryLabel = getCategoryLabel(product.category)
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     setAdding(true)
-    addItem({ id: product.id, name: product.name, price: Number(product.price), image: imgSrc, slug: product.slug, category: product.category })
+    addItem({ id: product.id, name: product.name, price: Number(product.price), image: imgSrc, slug: product.slug, category: categoryLabel })
     setTimeout(() => setAdding(false), 1500)
   }
 
@@ -45,7 +88,7 @@ function ProductCard({ product }: { product: Product }) {
         onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor='rgba(138,79,177,0.1)'; el.style.boxShadow='none'; el.style.transform='none' }}>
         <div style={{ height: '240px', overflow: 'hidden', background: '#F0E8FA', position: 'relative' }}>
           {imgSrc
-            ? <img src={imgSrc} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' }} onMouseEnter={e => { (e.currentTarget as HTMLImageElement).style.transform='scale(1.06)' }} onMouseLeave={e => { (e.currentTarget as HTMLImageElement).style.transform='scale(1)' }} />
+            ? <img src={imgSrc} alt={product.name} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' }} onMouseEnter={e => { (e.currentTarget as HTMLImageElement).style.transform='scale(1.06)' }} onMouseLeave={e => { (e.currentTarget as HTMLImageElement).style.transform='scale(1)' }} />
             : <div style={{ width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', color:'#8A4FB1', opacity: 0.4, fontFamily: '"Jost", sans-serif', fontSize: '0.75rem' }}>No Image Yet</div>
           }
           {product.badge && (
@@ -63,7 +106,7 @@ function ProductCard({ product }: { product: Product }) {
           </button>
         </div>
         <div style={{ padding: '1rem' }}>
-          <p style={{ fontFamily:'"Jost",sans-serif', fontSize:'0.58rem', fontWeight:600, letterSpacing:'0.14em', textTransform:'uppercase', color:'#8A4FB1', marginBottom:'4px' }}>{product.category}</p>
+          <p style={{ fontFamily:'"Jost",sans-serif', fontSize:'0.58rem', fontWeight:600, letterSpacing:'0.14em', textTransform:'uppercase', color:'#8A4FB1', marginBottom:'4px' }}>{categoryLabel}</p>
           <p style={{ fontFamily:'"Cormorant Garamond",serif', fontSize:'1.05rem', fontWeight:600, color:'#1A1A2E', marginBottom:'6px', lineHeight:1.2 }}>{product.name}</p>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
             <p style={{ fontFamily:'"Jost",sans-serif', fontSize:'0.95rem', fontWeight:700, color:'#8A4FB1' }}>{formatPrice(product.price)}</p>
@@ -115,6 +158,7 @@ export default function ShopPage() {
         </div>
 
         {/* Grid */}
+        <ProductGridErrorBoundary>
         {loading ? (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(240px,1fr))', gap:'1.5rem' }}>
             {Array.from({ length: 8 }).map((_, i) => (
@@ -138,6 +182,7 @@ export default function ShopPage() {
             {products.map(product => <ProductCard key={product.id} product={product} />)}
           </div>
         )}
+        </ProductGridErrorBoundary>
       </div>
     </div>
   )
