@@ -5,6 +5,7 @@ import img2 from '../../assets/softlifee-logo-light (2).png'
 import { useCart } from '../../store/cartStore'
 import { useAuth } from '../../store/authStore'
 import { useSearch } from '../../hooks/useProducts'
+import { getCloudinaryUrl } from '../../services/api'
 
 const shopCategories = [
   {
@@ -67,7 +68,7 @@ export default function Navbar() {
   // Search
   const { query, setQuery, results, loading: searchLoading } = useSearch()
 
-  const lightHeroPages = ['/about', '/gift-ideas', '/order-success', '/login', '/register', '/account', '/product','/shop', ]
+  const lightHeroPages = ['/about', '/gift-ideas', '/order-success', '/login', '/register', '/account', '/product', '/new-arrivals', '/shop', '/contact']
   const hasLightHero   = lightHeroPages.some(p => pathname.startsWith(p))
 
   useEffect(() => {
@@ -240,7 +241,7 @@ export default function Navbar() {
                   style={{ display: 'flex', alignItems: 'center', gap: '6px', color: textColor, textDecoration: 'none', transition: 'color 0.4s' }}>
                   <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #8A4FB1, #5B21B6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden', border: '1.5px solid rgba(138,79,177,0.3)' }}>
                     {user.avatar
-                      ? <img src={user.avatar} alt={user.first_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ? <img src={getCloudinaryUrl(user.avatar, 100)} alt={user.first_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       : <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, color: '#FFF' }}>{user.first_name?.[0]?.toUpperCase() || '?'}</span>
                     }
                   </div>

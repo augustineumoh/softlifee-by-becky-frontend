@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiUser, FiPackage, FiHeart, FiMapPin, FiLogOut, FiEdit2, FiChevronRight } from 'react-icons/fi'
 import { useAuth } from '../store/authStore'
+import { getCloudinaryUrl } from '../services/api'
 import { useOrders } from '../hooks/useOrders'
 import { useWishlist } from '../hooks/useWishlist'
 
@@ -51,7 +52,7 @@ export default function AccountPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'linear-gradient(135deg, #8A4FB1, #D4AF37)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2px solid rgba(255,255,255,0.3)' }}>
               {user.avatar
-                ? <img src={user.avatar} alt={user.first_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ? <img src={getCloudinaryUrl(user.avatar, 200)} alt={user.first_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 : <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 700, color: '#FFF' }}>{user.first_name?.[0]?.toUpperCase()}</span>
               }
             </div>

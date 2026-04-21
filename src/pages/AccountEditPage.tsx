@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { FiCamera, FiSave, FiArrowLeft, FiUser, FiPhone } from 'react-icons/fi'
 import { useAuth } from '../store/authStore'
-import { authAPI, tokens } from '../services/api'
+import { authAPI, tokens, getCloudinaryUrl } from '../services/api'
 
 export default function AccountEditPage() {
   const navigate = useNavigate()
@@ -67,7 +67,7 @@ export default function AccountEditPage() {
 
   if (!user) return null
 
-  const currentAvatar = avatarPreview || user.avatar || null
+  const currentAvatar = avatarPreview || getCloudinaryUrl(user.avatar, 200) || null
   const initials = (user.first_name?.[0] || '') + (user.last_name?.[0] || '')
 
   const inp: React.CSSProperties = {

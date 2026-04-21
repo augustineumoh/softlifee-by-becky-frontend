@@ -1,6 +1,20 @@
 // ── Base API configuration ────────────────────────────────────────────────────
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
 
+
+// ── Cloudinary URL helper ─────────────────────────────────────────────────────
+export function getCloudinaryUrl(url: string | null | undefined, width = 400): string {
+  if (!url) return ''
+  // Already a full URL
+  if (url.startsWith('http')) return url
+  // Relative Cloudinary path — build full URL
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || ''
+  if (cloudName) {
+    return `https://res.cloudinary.com/${cloudName}/image/upload/w_${width},c_fill,q_auto,f_auto/${url}`
+  }
+  return url
+}
+
 // ── Token management ──────────────────────────────────────────────────────────
 export const tokens = {
   get access()  { return localStorage.getItem('access_token') },
@@ -263,6 +277,7 @@ export interface User {
   full_name:  string
   phone:      string
   avatar:     string | null
+  avatar_url: string | null
   date_joined:string
 }
 
@@ -308,7 +323,7 @@ export interface ColorVariant {
   order:    number
 }
 
-export interface ProductDetail extends Omit<Product, 'category' | 'subcategory'> {
+export interface ProductDetail extends Product {
   description:    string
   details:        string[]
   images:         { id: number; image: string; alt_text: string; is_primary: boolean }[]
