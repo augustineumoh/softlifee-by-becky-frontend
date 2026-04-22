@@ -7,11 +7,11 @@ const FREE_DELIVERY_THRESHOLD = 50000
 const FLAT_DELIVERY = 2500
 
 export default function CartPage() {
-  const { items, removeItem, updateQty, total } = useCart()
+  const { items, removeItem, updateQty } = useCart()
   const navigate = useNavigate()
   const [removing, setRemoving] = useState<number | null>(null)
 
-  const subtotal = total()
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const deliveryFee = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : FLAT_DELIVERY
   const grandTotal  = subtotal + deliveryFee
 

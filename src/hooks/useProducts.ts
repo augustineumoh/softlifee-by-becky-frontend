@@ -14,9 +14,18 @@ export function useProducts(filters?: ProductFilters) {
     setError(null)
     try {
       const data = await productsAPI.getAll(filters)
-      setProducts(data.results)
-      setTotalCount(data.count)
-      setHasNext(!!data.next)
+      // Handle both a paginated response { results: [] } and a plain array []
+      const raw = data as unknown
+      if (Array.isArray(raw)) {
+        setProducts(raw as Product[])
+        setTotalCount((raw as Product[]).length)
+        setHasNext(false)
+      } else {
+        const paged = raw as { results?: Product[]; count?: number; next?: string | null }
+        setProducts(Array.isArray(paged.results) ? paged.results : [])
+        setTotalCount(paged.count ?? 0)
+        setHasNext(!!paged.next)
+      }
     } catch {
       setError('Failed to load products. Please try again.')
     } finally {
@@ -55,7 +64,16 @@ export function useCategories() {
 
   useEffect(() => {
     productsAPI.getCategories()
-      .then(setCategories)
+      .then(data => {
+        // Handle both a plain array and a paginated { results: [] } shape
+        const raw = data as unknown
+        if (Array.isArray(raw)) {
+          setCategories(raw as Category[])
+        } else {
+          const paged = raw as { results?: Category[] }
+          setCategories(Array.isArray(paged.results) ? paged.results : [])
+        }
+      })
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [])
@@ -95,7 +113,13 @@ export function useNewArrivals(count = 8) {
 
   useEffect(() => {
     productsAPI.getAll({ new_arrivals: true })
-      .then(data => setProducts(data.results.slice(0, count)))
+      .then(data => {
+        const raw = data as unknown
+        const results = Array.isArray(raw)
+          ? (raw as Product[])
+          : ((raw as { results?: Product[] }).results ?? [])
+        setProducts(results.slice(0, count))
+      })
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [count])
