@@ -22,6 +22,7 @@ export default function RegisterPage() {
     setLocalErr('')
     if (form.password !== form.password2) { setLocalErr('Passwords do not match.'); return }
     if (form.password.length < 8) { setLocalErr('Password must be at least 8 characters.'); return }
+    if (form.phone && !/^[0-9+\-\s]{7,15}$/.test(form.phone)) { setLocalErr('Please enter a valid phone number (numbers only).'); return }
     try {
       await register(form)
     } catch {}
@@ -33,23 +34,23 @@ export default function RegisterPage() {
     { key: 'first_name', label: 'First Name',  icon: <FiUser size={15}/>,  type: 'text',  placeholder: 'Becky' },
     { key: 'last_name',  label: 'Last Name',   icon: <FiUser size={15}/>,  type: 'text',  placeholder: 'Smith' },
     { key: 'email',      label: 'Email',        icon: <FiMail size={15}/>,  type: 'email', placeholder: 'hello@example.com' },
-    { key: 'phone',      label: 'Phone Number', icon: <FiPhone size={15}/>, type: 'tel',   placeholder: '08012345678' },
+    { key: 'phone',      label: 'Phone Number', icon: <FiPhone size={15}/>, type: 'tel',   placeholder: '08012345678', pattern: '[0-9+\-\s]{7,15}' },
   ]
 
   return (
     <div style={{ minHeight: '100vh', background: '#FAF7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '5rem 1.5rem 2rem' }}>
       <div style={{ width: '100%', maxWidth: '480px' }}>
 
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+        {/* <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <Link to="/" style={{ textDecoration: 'none' }}>
             <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2rem', fontWeight: 700, color: '#8A4FB1', margin: 0 }}>Soft<span style={{ color: '#D4AF37' }}>Lifee</span>.</p>
           </Link>
-          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.4)', marginTop: '6px' }}>Join the community</p>
-        </div>
+          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.4)', marginTop: '6px' }}>Join the community</p>
+        </div> */}
 
         <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '2.5rem', boxShadow: '0 4px 32px rgba(138,79,177,0.08)', border: '1px solid rgba(138,79,177,0.1)' }}>
-          <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '2rem', fontWeight: 600, color: '#1A1A2E', margin: '0 0 0.25rem' }}>Create Account</h1>
-          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.82rem', fontWeight: 300, color: '#5B21B6', marginBottom: '2rem' }}>
+          <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '2rem', fontWeight: 700, color: '#1A1A2E', margin: '0 0 0.25rem' }}>Create Account</h1>
+          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.82rem', fontWeight: 400, color: '#5B21B6', marginBottom: '2rem' }}>
             Already have an account? <Link to="/login" style={{ color: '#8A4FB1', fontWeight: 600 }}>Sign in</Link>
           </p>
 
@@ -79,10 +80,15 @@ export default function RegisterPage() {
             {/* Email & Phone */}
             {fields.slice(2).map(f => (
               <div key={f.key}>
-                <label style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#1A1A2E', display: 'block', marginBottom: '6px' }}>{f.label}</label>
+                <label style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#1A1A2E', display: 'block', marginBottom: '6px' }}>{f.label}</label>
                 <div style={{ position: 'relative' }}>
                   <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#8A4FB1', lineHeight: 0 }}>{f.icon}</span>
                   <input type={f.type} value={(form as any)[f.key]} onChange={update(f.key)} required={f.key !== 'phone'} placeholder={f.placeholder}
+                    onKeyDown={f.key === 'phone' ? (e) => {
+                      const allowed = ['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Home','End','+','-',' ']
+                      if (!/[0-9]/.test(e.key) && !allowed.includes(e.key)) e.preventDefault()
+                    } : undefined}
+                    inputMode={f.key === 'phone' ? 'numeric' : undefined}
                     style={{ width: '100%', padding: '0.85rem 1rem 0.85rem 2.75rem', border: '1.5px solid rgba(138,79,177,0.2)', borderRadius: '10px', fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', color: '#1A1A2E', background: '#FAF7FF', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
                     onFocus={e => { e.target.style.borderColor = '#8A4FB1' }}
                     onBlur={e  => { e.target.style.borderColor = 'rgba(138,79,177,0.2)' }} />
@@ -92,7 +98,7 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div>
-              <label style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#1A1A2E', display: 'block', marginBottom: '6px' }}>Password</label>
+              <label style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#1A1A2E', display: 'block', marginBottom: '6px' }}>Password</label>
               <div style={{ position: 'relative' }}>
                 <FiLock size={15} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#8A4FB1' }} />
                 <input type={showPass ? 'text' : 'password'} value={form.password} onChange={update('password')} required minLength={8} placeholder="Min. 8 characters"
@@ -108,7 +114,7 @@ export default function RegisterPage() {
 
             {/* Confirm password */}
             <div>
-              <label style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#1A1A2E', display: 'block', marginBottom: '6px' }}>Confirm Password</label>
+              <label style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#1A1A2E', display: 'block', marginBottom: '6px' }}>Confirm Password</label>
               <div style={{ position: 'relative' }}>
                 <FiLock size={15} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#8A4FB1' }} />
                 <input type="password" value={form.password2} onChange={update('password2')} required placeholder="Repeat your password"
@@ -119,11 +125,11 @@ export default function RegisterPage() {
             </div>
 
             <button type="submit" disabled={isLoading}
-              style={{ padding: '1rem', background: isLoading ? 'rgba(138,79,177,0.6)' : '#8A4FB1', color: '#FFF', border: 'none', borderRadius: '10px', fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', cursor: isLoading ? 'not-allowed' : 'pointer', transition: 'background 0.3s', marginTop: '0.5rem' }}>
+              style={{ padding: '1rem', background: isLoading ? 'rgba(138,79,177,0.6)' : '#8A4FB1', color: '#FFF', border: 'none', borderRadius: '10px', fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', cursor: isLoading ? 'not-allowed' : 'pointer', transition: 'background 0.3s', marginTop: '0.5rem' }}>
               {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
 
-            <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', color: 'rgba(26,26,46,0.4)', textAlign: 'center', lineHeight: 1.6 }}>
+            <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', color: 'rgba(26,26,46,0.4)', textAlign: 'center', lineHeight: 1.6 }}>
               By creating an account you agree to our <Link to="/terms" style={{ color: '#8A4FB1' }}>Terms of Service</Link> and <Link to="/privacy" style={{ color: '#8A4FB1' }}>Privacy Policy</Link>.
             </p>
           </form>
