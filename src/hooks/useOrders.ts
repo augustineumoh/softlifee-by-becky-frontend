@@ -30,33 +30,29 @@ export function useOrders() {
   const [orders,  setOrders]  = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState<string | null>(null)
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  const refetch = () => setRefreshKey(k => k + 1)
 
   useEffect(() => {
-    // Don't even try if not logged in
     if (!tokens.access) {
       setLoading(false)
       setOrders([])
       return
     }
-
+    setLoading(true)
     ordersAPI.getMyOrders()
       .then(data => {
-        // Safety check — ensure we always set an array
         setOrders(Array.isArray(data) ? data : [])
       })
-      .catch((err) => {
-        // 401 = not authenticated — just set empty array silently
-        if (err?.status === 401 || err?.detail?.includes('401')) {
-          setOrders([])
-        } else {
-          setError('Failed to load orders.')
-        }
+      .catch(() => {
         setOrders([])
+        setError('Failed to load orders.')
       })
       .finally(() => setLoading(false))
-  }, [])
+  }, [refreshKey])
 
-  return { orders, loading, error }
+  return { orders, loading, error, refetch }
 }
 
 // ── Hook: verify Paystack payment ─────────────────────────────────────────────

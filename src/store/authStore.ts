@@ -71,8 +71,18 @@ export const useAuth = create<AuthState>()(
     }),
     {
       name:    'softlifee-auth',
+      // Persist full user object including avatar
       partialize: (state) => ({
-        user:            state.user,
+        user:            state.user ? {
+          id:          state.user.id,
+          email:       state.user.email,
+          first_name:  state.user.first_name,
+          last_name:   state.user.last_name,
+          full_name:   state.user.full_name,
+          phone:       state.user.phone,
+          avatar:      state.user.avatar,
+          date_joined: state.user.date_joined,
+        } : null,
         isAuthenticated: state.isAuthenticated,
       }),
     }

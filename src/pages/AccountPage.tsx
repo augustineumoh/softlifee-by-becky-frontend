@@ -20,7 +20,7 @@ const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
 export default function AccountPage() {
   const navigate = useNavigate()
   const { user, isAuthenticated, logout } = useAuth()
-  const { orders: ordersRaw, loading: ordersLoading } = useOrders()
+  const { orders: ordersRaw, loading: ordersLoading, refetch: refetchOrders } = useOrders()
   const orders = Array.isArray(ordersRaw) ? ordersRaw : []
   const { items: wishlistItemsRaw } = useWishlist()
   const wishlistItems = Array.isArray(wishlistItemsRaw) ? wishlistItemsRaw : []
@@ -86,7 +86,13 @@ export default function AccountPage() {
         {/* ── ORDERS TAB ── */}
         {activeTab === 'orders' && (
           <div>
-            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.8rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '1.5rem' }}>My Orders</h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.8rem', fontWeight: 600, color: '#1A1A2E', margin: 0 }}>My Orders</h2>
+              <button onClick={refetchOrders}
+                style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8A4FB1', background: '#F3E8FF', border: 'none', borderRadius: '8px', padding: '0.5rem 1rem', cursor: 'pointer' }}>
+                ↻ Refresh
+              </button>
+            </div>
             {ordersLoading ? (
               <p style={{ fontFamily: '"Jost", sans-serif', color: 'rgba(26,26,46,0.4)' }}>Loading orders...</p>
             ) : orders.length === 0 ? (
