@@ -95,12 +95,13 @@ async function refreshAccessToken(): Promise<boolean> {
 // ── Auth API ──────────────────────────────────────────────────────────────────
 export const authAPI = {
   register: (data: {
-    first_name: string
-    last_name:  string
-    email:      string
-    phone:      string
-    password:   string
-    password2:  string
+    first_name:    string
+    last_name:     string
+    email:         string
+    phone:         string
+    password:      string
+    password2:     string
+    referral_code?: string
   }) => request<AuthResponse>('/auth/register/', {
     method: 'POST',
     body:   JSON.stringify(data),
@@ -186,6 +187,7 @@ export const productsAPI = {
     if (params?.search)       query.set('search',       params.search)
     if (params?.ordering)     query.set('ordering',     params.ordering)
     if (params?.in_stock)     query.set('in_stock',     'true')
+    if (params?.on_sale)      query.set('on_sale',      'true')
     if (params?.page)         query.set('page',         String(params.page))
     const qs = query.toString()
     return request<PaginatedResponse<Product>>(`/products/${qs ? `?${qs}` : ''}`)
@@ -270,15 +272,17 @@ export const analyticsAPI = {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export interface User {
-  id:         number
-  email:      string
-  first_name: string
-  last_name:  string
-  full_name:  string
-  phone:      string
-  avatar:     string | null
-  avatar_url: string | null
-  date_joined:string
+  id:             number
+  email:          string
+  first_name:     string
+  last_name:      string
+  full_name:      string
+  phone:          string
+  avatar:         string | null
+  avatar_url:     string | null
+  referral_code:  string
+  referral_count: number
+  date_joined:    string
 }
 
 export interface AuthResponse {
@@ -300,19 +304,24 @@ export interface Address {
 }
 
 export interface Product {
-  id:            number
-  name:          string
-  slug:          string
-  category:      string | { id: number; name: string; slug: string }
-  subcategory:   string | { id: number; name: string; slug: string } | null
-  price:         string
-  badge:         string
-  badge_display: string
-  primary_image: { image: string; alt_text: string } | null
-  rating:        string
-  review_count:  number
-  in_stock:      boolean
-  is_new:        boolean
+  id:              number
+  name:            string
+  slug:            string
+  category:        string | { id: number; name: string; slug: string }
+  subcategory:     string | { id: number; name: string; slug: string } | null
+  price:           string
+  sale_price:      string | null
+  active_price:    string
+  is_on_sale:      boolean
+  discount_percent:number
+  sale_end:        string | null
+  badge:           string
+  badge_display:   string
+  primary_image:   { image: string; alt_text: string } | null
+  rating:          string
+  review_count:    number
+  in_stock:        boolean
+  is_new:          boolean
 }
 
 export interface ColorVariant {
@@ -323,12 +332,23 @@ export interface ColorVariant {
   order:    number
 }
 
+export interface SizeVariant {
+  id:          number
+  label:       string
+  size_type:   'clothing' | 'shoes' | 'numeric'
+  in_stock:    boolean
+  stock_count: number
+  order:       number
+}
+
 export interface ProductDetail extends Product {
   description:    string
   details:        string[]
   images:         { id: number; image: string; alt_text: string; is_primary: boolean }[]
   color_variants: ColorVariant[]
+  size_variants:  SizeVariant[]
   videos:         { id: number; video_url: string; poster: string | null }[]
+  sale_start:     string | null
   is_wishlisted:  boolean
   stock_count:    number
   added_date:     string
@@ -350,6 +370,7 @@ export interface ProductFilters {
   subcategory?:  string
   badge?:        string
   new_arrivals?: boolean
+  on_sale?:      boolean
   min_price?:    number
   max_price?:    number
   search?:       string
@@ -439,6 +460,7 @@ export interface CreateOrderData {
     product_id:     number
     quantity:       number
     color_variant?: string
+    size_variant?:  string
   }>
 }
 
@@ -468,4 +490,109 @@ export interface Review {
   body:                 string
   is_verified_purchase: boolean
   created_at:           string
+}
+
+// ── Cart types ────────────────────────────────────────────────────────────────
+export interface ServerCartItem {
+  id:            number
+  product:       Product
+  quantity:      number
+  color_variant: string
+  size_variant:  string
+  subtotal:      string
+  added_at:      string
+}
+
+export interface ServerCart {
+  id:         number
+  items:      ServerCartItem[]
+  total:      string
+  item_count: number
+  updated_at: string
+}
+
+// ── Return types ──────────────────────────────────────────────────────────────
+export interface ReturnItem {
+  id:            number
+  order_item:    number
+  product_name:  string
+  product_image: string
+  quantity:      number
+}
+
+export interface ReturnRequest {
+  id:             number
+  return_number:  string
+  order:          number
+  order_number:   string
+  reason:         string
+  reason_display: string
+  description:    string
+  status:         string
+  status_display: string
+  admin_notes:    string
+  refund_amount:  string | null
+  items:          ReturnItem[]
+  created_at:     string
+  updated_at:     string
+}
+
+export interface ReferralInfo {
+  referral_code:   string
+  referral_link:   string
+  total_referrals: number
+  referred_users:  Array<{
+    email:      string
+    first_name: string
+    joined_at:  string
+  }>
+}
+
+// ── Cart API ──────────────────────────────────────────────────────────────────
+export const cartAPI = {
+  get: () =>
+    request<ServerCart>('/cart/', {}, true),
+
+  add: (data: { product_id: number; quantity?: number; color_variant?: string; size_variant?: string }) =>
+    request<ServerCartItem>('/cart/add/', {
+      method: 'POST',
+      body:   JSON.stringify(data),
+    }, true),
+
+  updateItem: (itemId: number, quantity: number) =>
+    request<ServerCartItem>(`/cart/items/${itemId}/`, {
+      method: 'PATCH',
+      body:   JSON.stringify({ quantity }),
+    }, true),
+
+  removeItem: (itemId: number) =>
+    request(`/cart/items/${itemId}/`, { method: 'DELETE' }, true),
+
+  clear: () =>
+    request('/cart/', { method: 'DELETE' }, true),
+}
+
+// ── Returns API ───────────────────────────────────────────────────────────────
+export const returnsAPI = {
+  create: (data: {
+    order_id:    number
+    reason:      string
+    description: string
+    items:       Array<{ order_item_id: number; quantity: number }>
+  }) => request<ReturnRequest>('/orders/returns/', {
+    method: 'POST',
+    body:   JSON.stringify(data),
+  }, true),
+
+  getMyReturns: () =>
+    request<ReturnRequest[]>('/orders/returns/my-returns/', {}, true),
+
+  getReturn: (id: number) =>
+    request<ReturnRequest>(`/orders/returns/${id}/`, {}, true),
+}
+
+// ── Referral API ──────────────────────────────────────────────────────────────
+export const referralAPI = {
+  getInfo: () =>
+    request<ReferralInfo>('/auth/referrals/', {}, true),
 }
