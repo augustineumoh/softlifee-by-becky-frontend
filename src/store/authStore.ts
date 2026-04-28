@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { authAPI, tokens, type User } from '../services/api'
+import { useCart } from './cartStore'
 
 interface AuthState {
   user:          User | null
@@ -53,6 +54,7 @@ export const useAuth = create<AuthState>()(
         try { await authAPI.logout() } catch {}
         tokens.clear()
         set({ user: null, isAuthenticated: false })
+        useCart.getState().clearCart()
       },
 
       loadUser: async () => {
