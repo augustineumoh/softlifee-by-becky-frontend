@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { FiCamera, FiSave, FiArrowLeft, FiUser, FiPhone } from 'react-icons/fi'
 import { useAuth } from '../store/authStore'
-import { authAPI, tokens, getCloudinaryUrl } from '../services/api'
+import { authAPI, getCloudinaryUrl } from '../services/api'
 
 export default function AccountEditPage() {
   const navigate = useNavigate()
@@ -46,13 +46,7 @@ export default function AccountEditPage() {
 
       // Upload avatar if changed
       if (avatarFile) {
-        const formData = new FormData()
-        formData.append('avatar', avatarFile)
-        await fetch(`${import.meta.env.VITE_API_URL}/auth/profile/avatar/`, {
-          method:  'POST',
-          headers: { 'Authorization': `Bearer ${tokens.access}` },
-          body:    formData,
-        })
+        await authAPI.uploadAvatar(avatarFile)
       }
 
       await loadUser()

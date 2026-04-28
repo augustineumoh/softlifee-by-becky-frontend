@@ -136,6 +136,30 @@ export const authAPI = {
       body:   JSON.stringify(data),
     }, true),
 
+  uploadAvatar: async (file: File): Promise<User> => {
+    // FormData uploads can't use the JSON request() helper (it sets Content-Type: json),
+    // so we implement the same 401→refresh→retry logic here for multipart requests.
+    const buildForm = () => { const f = new FormData(); f.append('avatar', file); return f }
+    const send = (token: string) =>
+      fetch(`${API_BASE}/auth/profile/avatar/`, {
+        method:  'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body:    buildForm(),
+      })
+
+    let res = await send(tokens.access!)
+    if (res.status === 401 && tokens.refresh) {
+      const refreshed = await refreshAccessToken()
+      if (!refreshed) { tokens.clear(); window.location.href = '/login'; throw new Error('Session expired') }
+      res = await send(tokens.access!)
+    }
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}))
+      throw err
+    }
+    return res.json()
+  },
+
   changePassword: (data: {
     old_password:  string
     new_password:  string
