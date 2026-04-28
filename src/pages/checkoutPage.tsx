@@ -84,7 +84,7 @@ export default function CheckoutPage() {
       payment_method:   paymentMethod,
       discount_code:    appliedCode || undefined,
       items: items.map(i => ({
-        product_id:    i.id,
+        product_slug:  i.slug,
         quantity:      i.quantity,
         color_variant: (i as any).colorVariant || '',
       })),
