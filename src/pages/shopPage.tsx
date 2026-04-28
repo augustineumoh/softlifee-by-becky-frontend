@@ -4,6 +4,7 @@ import { FiHeart, FiShoppingBag, FiSearch, FiSliders } from 'react-icons/fi'
 import { useProducts, useCategories } from '../hooks/useProducts'
 import { useWishlist } from '../hooks/useWishlist'
 import { useCart } from '../store/cartStore'
+import { getCloudinaryUrl } from '../services/api'
 import type { Product, ProductFilters } from '../services/api'
 
 const formatPrice = (n: string | number) => '₦' + Number(n).toLocaleString('en-NG')
@@ -39,7 +40,7 @@ function ProductCard({ product }: { product: Product }) {
   const [adding, setAdding]      = useState(false)
   const [hovered, setHovered]    = useState(false)
   const wishlisted = isWishlisted(product.slug)
-  const imgSrc     = product.primary_image?.image || ''
+  const imgSrc     = getCloudinaryUrl(product.primary_image?.image, 400)
   const badge      = BADGE_COLORS[product.badge] || { bg: '#8A4FB1', color: '#FFF' }
 
   const handleAdd = (e: React.MouseEvent) => {
