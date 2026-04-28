@@ -7,10 +7,12 @@ export function getCloudinaryUrl(url: string | null | undefined, width = 400): s
   if (!url) return ''
   // Already a full URL
   if (url.startsWith('http')) return url
-  // Relative Cloudinary path — build full URL
+  // Strip leading "image/upload/" — the stored path from cloudinary_storage includes it
+  // but we re-insert it (with transformations) below
+  const publicId = url.replace(/^image\/upload\//, '')
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || ''
   if (cloudName) {
-    return `https://res.cloudinary.com/${cloudName}/image/upload/w_${width},c_fill,q_auto,f_auto/${url}`
+    return `https://res.cloudinary.com/${cloudName}/image/upload/w_${width},c_fill,q_auto,f_auto/${publicId}`
   }
   return url
 }
