@@ -30,6 +30,16 @@ export const useAuth = create<AuthState>()(
           const res = await authAPI.login(email, password)
           tokens.set(res.tokens.access, res.tokens.refresh)
           set({ user: res.user, isAuthenticated: true, isLoading: false })
+
+          // Restore cart saved on last logout for this user
+          const saved = localStorage.getItem(`softlifee-cart-user-${res.user.id}`)
+          if (saved) {
+            try {
+              const savedItems: import('./cartStore').CartItem[] = JSON.parse(saved)
+              savedItems.forEach(item => useCart.getState().addItem(item))
+              localStorage.removeItem(`softlifee-cart-user-${res.user.id}`)
+            } catch {}
+          }
         } catch (err: any) {
           const msg = err?.non_field_errors?.[0] || err?.error || 'Login failed'
           set({ error: msg, isLoading: false })
@@ -51,6 +61,12 @@ export const useAuth = create<AuthState>()(
       },
 
       logout: async () => {
+        // Save cart items keyed to the user so they restore on next login
+        const userId = get().user?.id
+        const cartItems = useCart.getState().items
+        if (userId && cartItems.length > 0) {
+          localStorage.setItem(`softlifee-cart-user-${userId}`, JSON.stringify(cartItems))
+        }
         try { await authAPI.logout() } catch {}
         tokens.clear()
         set({ user: null, isAuthenticated: false })
