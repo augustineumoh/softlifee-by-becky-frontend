@@ -54,6 +54,7 @@ import juicer from '../assets/blender.jpeg'
 import sensorlight from '../assets/solar light.jpg'
 import { FaArrowDown } from "react-icons/fa6";
 import { FaArrowRight } from "react-icons/fa";
+import { useCart } from '../store/cartStore'
 
 const formatPrice = (n: number) => '₦' + n.toLocaleString('en-NG')
 
@@ -186,8 +187,18 @@ function useInView(threshold = 0.1) {
 function ProductCard({ product, delay = 0, rank }: { product: typeof allProducts[0]; delay?: number; rank?: number }) {
   const [hovered, setHovered]       = useState(false)
   const [wishlisted, setWishlisted] = useState(false)
+  const [adding, setAdding]         = useState(false)
   const { ref, visible }            = useInView()
   const left                        = daysLeft(product.addedDate)
+  const { addItem }                 = useCart()
+
+  const handleAdd = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    addItem({ id: product.id, name: product.name, price: product.price, image: product.image, slug: product.slug, category: product.category })
+    setAdding(true)
+    setTimeout(() => setAdding(false), 1500)
+  }
 
   return (
     <div ref={ref} style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(36px)', transition: `opacity 0.65s ease ${delay}s, transform 0.65s cubic-bezier(0.22,1,0.36,1) ${delay}s` }}>
@@ -216,9 +227,9 @@ function ProductCard({ product, delay = 0, rank }: { product: typeof allProducts
           </button>
 
           {/* Add to cart */}
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(26,26,46,0.93)', backdropFilter: 'blur(4px)', padding: '0.8rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <div onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.93)', backdropFilter: 'blur(4px)', padding: '0.8rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#FFF' }}>Add to Cart</span>
+            <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#FFF' }}>{adding ? '✓ Added!' : 'Add to Cart'}</span>
           </div>
         </div>
 

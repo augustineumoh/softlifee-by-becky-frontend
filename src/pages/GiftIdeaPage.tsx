@@ -32,6 +32,10 @@ import booblifter from '../assets/boops lifter.jpeg'
 import vineleaf from '../assets/vine leaf.jpg'
 import sensorlight from '../assets/solar light.jpg'
 import { FaArrowDown, FaArrowRight } from 'react-icons/fa'
+import { useCart } from '../store/cartStore'
+
+const slugToId = (slug: string) =>
+  Math.abs(slug.split('').reduce((h, c) => (Math.imul(31, h) + c.charCodeAt(0)) | 0, 0))
 
 const formatPrice = (n: number) => '₦' + n.toLocaleString('en-NG')
 
@@ -158,7 +162,18 @@ function useInView(threshold = 0.1) {
 
 function MiniCard({ product }: { product: typeof giftProducts['her'][0] }) {
   const [hovered, setHovered] = useState(false)
+  const [adding, setAdding]   = useState(false)
+  const { addItem }           = useCart()
   const bc = badgeColors[product.badge || ''] || { bg: '#8A4FB1', text: '#FFF' }
+
+  const handleAdd = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    addItem({ id: slugToId(product.slug), name: product.name, price: product.price, image: product.image, slug: product.slug, category: '' })
+    setAdding(true)
+    setTimeout(() => setAdding(false), 1500)
+  }
+
   return (
     <Link
       to={`/product/${product.slug}`}
@@ -174,9 +189,9 @@ function MiniCard({ product }: { product: typeof giftProducts['her'][0] }) {
               {product.badge}
             </div>
           )}
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(26,26,46,0.88)', backdropFilter: 'blur(4px)', padding: '0.65rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          <div onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.88)', backdropFilter: 'blur(4px)', padding: '0.65rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF' }}>Add to Cart</span>
+            <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF' }}>{adding ? '✓ Added!' : 'Add to Cart'}</span>
           </div>
         </div>
         <div style={{ padding: '0.9rem' }}>

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { FiHeart, FiShoppingBag, FiSearch, FiSliders } from 'react-icons/fi'
 import { useProducts, useCategories } from '../hooks/useProducts'
 import { useWishlist } from '../hooks/useWishlist'
@@ -127,11 +127,27 @@ function SkeletonCard() {
 }
 
 export default function ShopPage() {
-  const [filters,       setFilters]      = useState<ProductFilters>({ ordering: '-created_at' })
+  const { category: categoryParam, subcategory: subcategoryParam } = useParams<{ category?: string; subcategory?: string }>()
+  const navigate = useNavigate()
+
+  const [filters,       setFilters]      = useState<ProductFilters>(() => ({
+    ordering: '-created_at',
+    ...(categoryParam    ? { category:    categoryParam    } : {}),
+    ...(subcategoryParam ? { subcategory: subcategoryParam } : {}),
+  }))
   const [searchInput,   setSearchInput]  = useState('')
   const [filtersOpen,   setFiltersOpen]  = useState(false)
   const { products, loading, error, totalCount } = useProducts(filters)
   const { categories } = useCategories()
+
+  // Keep filter in sync when URL params change (e.g. user clicks navbar link while already on shop)
+  useEffect(() => {
+    setFilters(prev => ({
+      ordering: prev.ordering,
+      ...(categoryParam    ? { category:    categoryParam    } : {}),
+      ...(subcategoryParam ? { subcategory: subcategoryParam } : {}),
+    }))
+  }, [categoryParam, subcategoryParam])
 
   const safeProducts   = Array.isArray(products) ? products : []
   const safeCategories = Array.isArray(categories) ? categories : []
@@ -147,6 +163,7 @@ export default function ShopPage() {
   const clearFilters = () => {
     setFilters({ ordering: '-created_at' })
     setSearchInput('')
+    navigate('/shop')
   }
 
   const activeFilterCount = Object.keys(filters).filter(k => k !== 'ordering' && (filters as any)[k]).length
@@ -188,7 +205,7 @@ export default function ShopPage() {
           {/* Category */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
             <label style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.4)' }}>Category</label>
-            <select onChange={e => updateFilter('category', e.target.value)} value={filters.category || ''}
+            <select onChange={e => { const v = e.target.value; v ? navigate(`/shop/${v}`) : navigate('/shop') }} value={filters.category || ''}
               style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', fontWeight: 500, padding: '0.5rem 0.85rem', border: '1.5px solid rgba(138,79,177,0.2)', borderRadius: '8px', background: '#FAF7FF', color: '#1A1A2E', cursor: 'pointer', outline: 'none' }}>
               <option value="">All Categories</option>
               {safeCategories.map(cat => <option key={cat.id} value={cat.slug}>{cat.name}</option>)}
