@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { useCart } from '../store/cartStore'
 import HeroSection from '../components/home/heroSection'
 import totebag from '../assets/tote bag.jpg'
 import diffuser from '../assets/diffuser.jpg'
@@ -75,7 +76,7 @@ const categories = [
   { label: 'Home Essentials',    sub: 'Kitchen · Bathroom · Lighting', to: '/shop/home-essentials', image: relaxationchair },
   { label: 'Skincare',           sub: 'Face · Body · Travel Kits',     to: '/shop/skincare',        image: travelkit },
   { label: 'Accessories',        sub: 'Bags · Jewelry · Drinkware',    to: '/shop/accessories',     image: stanleycup },
-  { label: "Women's Essentials", sub: 'Personal Care & More',          to: '/shop/womens',          image: booptape },
+  { label: "Women's Essentials", sub: 'Personal Care & More',          to: '/shop/womens-essentials', image: booptape },
 ]
 
 const giftIdeas = [
@@ -103,12 +104,23 @@ const perks = [
 
 // ── Product Card ──────────────────────────────────────────────────────────────
 function ProductCard({ product, delay = 0 }: { product: typeof bestSellers[0]; delay?: number }) {
-  const [hovered, setHovered] = useState(false)
+  const [hovered, setHovered]   = useState(false)
   const [wishlisted, setWishlisted] = useState(false)
+  const [adding, setAdding]     = useState(false)
+  const { addItem }             = useCart()
   const badgeColors: Record<string, string> = {
     'Best Seller': '#8A4FB1', 'Top Rated': '#5B21B6',
     'New': '#D4AF37', 'Trending': '#1A1A2E', 'Premium': '#C4A8D4',
   }
+
+  const handleAdd = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    addItem({ id: product.id, name: product.name, price: product.price, image: product.image, slug: product.slug, category: product.category })
+    setAdding(true)
+    setTimeout(() => setAdding(false), 1500)
+  }
+
   return (
     <Reveal delay={delay}>
       <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ cursor: 'pointer' }}>
@@ -121,9 +133,9 @@ function ProductCard({ product, delay = 0 }: { product: typeof bestSellers[0]; d
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
           </button>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(26,26,46,0.92)', backdropFilter: 'blur(4px)', padding: '0.9rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <div onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.92)', backdropFilter: 'blur(4px)', padding: '0.9rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#FFF' }}>Add to Cart</span>
+            <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#FFF' }}>{adding ? '✓ Added!' : 'Add to Cart'}</span>
           </div>
         </div>
         <Link to={`/product/${product.slug}`} style={{ textDecoration: 'none' }}>
