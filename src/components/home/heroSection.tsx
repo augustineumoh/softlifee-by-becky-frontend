@@ -96,7 +96,7 @@ export default function HeroSection() {
   const isCenter = slide.align === 'center'
 
   return (
-    <section style={{ position: 'relative', width: '100%', height: '100vh', minHeight: '640px', overflow: 'hidden', background: '#1a0a2e' }}>
+    <section style={{ position: 'relative', width: '100%', height: 'min(100vh, 100svh)', minHeight: '520px', overflow: 'hidden', background: '#1a0a2e' }}>
 
       {/* PREV SLIDE */}
       {prevSlide && (
@@ -132,44 +132,45 @@ export default function HeroSection() {
         zIndex: 10,
         display: 'flex', alignItems: 'center',
         justifyContent: isLeft ? 'flex-start' : isRight ? 'flex-end' : 'center',
-        padding: '0 clamp(1.5rem,7vw,6rem)',
+        padding: '0 clamp(1.25rem,7vw,6rem)',
       }}>
         <div key={slide.id} style={{
           maxWidth: '540px',
           textAlign: isCenter ? 'center' : 'left',
           animation: 'sl-contentUp 0.85s cubic-bezier(0.22,1,0.36,1) forwards',
+          width: '100%',
         }}>
           {/* Eyebrow */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', marginBottom: '1.2rem' }}>
-            <div style={{ width: '24px', height: '1px', background: '#C084FC' }} />
-            <span style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.35em', textTransform: 'uppercase', color: '#C084FC' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', marginBottom: '0.9rem' }}>
+            <div style={{ width: '20px', height: '1px', background: '#C084FC' }} />
+            <span style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.55rem', fontWeight: 600, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#C084FC' }}>
               {slide.eyebrow}
             </span>
-            <div style={{ width: '24px', height: '1px', background: '#C084FC' }} />
+            <div style={{ width: '20px', height: '1px', background: '#C084FC' }} />
           </div>
 
           {/* Headline */}
-          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2.8rem,5.5vw,5rem)', fontWeight: 500, fontStyle: 'italic', color: '#FFFFFF', lineHeight: 1.05, margin: '0 0 0.05em 0', textShadow: '0 2px 30px rgba(26,10,46,0.3)', letterSpacing: '0.01em' }}>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2rem,5.5vw,5rem)', fontWeight: 500, fontStyle: 'italic', color: '#FFFFFF', lineHeight: 1.05, margin: '0 0 0.05em 0', textShadow: '0 2px 30px rgba(26,10,46,0.3)', letterSpacing: '0.01em' }}>
             {slide.headline}
           </h1>
-          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2.8rem,5.5vw,5rem)', fontWeight: 600, fontStyle: 'italic', color: '#E8D5F5', lineHeight: 1.05, margin: '0 0 1.4rem 0', textShadow: '0 2px 30px rgba(26,10,46,0.3)', letterSpacing: '0.01em' }}>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2rem,5.5vw,5rem)', fontWeight: 600, fontStyle: 'italic', color: '#E8D5F5', lineHeight: 1.05, margin: '0 0 clamp(0.75rem,2vw,1.4rem) 0', textShadow: '0 2px 30px rgba(26,10,46,0.3)', letterSpacing: '0.01em' }}>
             {slide.headlineAccent}
           </h1>
 
-          {/* Sub */}
-          <p style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.88rem', fontWeight: 300, color: 'rgba(255,255,255,0.75)', lineHeight: 1.78, marginBottom: '2rem', maxWidth: '380px', marginLeft: isCenter ? 'auto' : 0, marginRight: isCenter ? 'auto' : 0 }}>
+          {/* Sub — hidden on very small screens */}
+          <p className="sl-hero-sub" style={{ fontFamily: "'Jost', sans-serif", fontSize: 'clamp(0.78rem,2vw,0.88rem)', fontWeight: 300, color: 'rgba(255,255,255,0.75)', lineHeight: 1.78, marginBottom: 'clamp(1.25rem,3vw,2rem)', maxWidth: '360px', marginLeft: isCenter ? 'auto' : 0, marginRight: isCenter ? 'auto' : 0 }}>
             {slide.sub}
           </p>
 
           {/* CTAs */}
-          <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', justifyContent: isCenter ? 'center' : 'flex-start' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: isCenter ? 'center' : 'flex-start' }}>
             <Link to={slide.cta}
-              style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#FFFFFF', background: '#8A4FB1', textDecoration: 'none', padding: '0.9rem 2rem', transition: 'all 0.3s ease', display: 'inline-block' }}
+              style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#FFFFFF', background: '#8A4FB1', textDecoration: 'none', padding: 'clamp(0.75rem,2vw,0.9rem) clamp(1.25rem,3vw,2rem)', transition: 'all 0.3s ease', display: 'inline-block', minHeight: '44px', display: 'inline-flex', alignItems: 'center' }}
               onMouseEnter={e => { e.currentTarget.style.background = '#6D28D9' }}
               onMouseLeave={e => { e.currentTarget.style.background = '#8A4FB1' }}
             >Discover More</Link>
             <Link to="/shop"
-              style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.68rem', fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#FFF', background: 'transparent', textDecoration: 'none', padding: '0.9rem 2rem', border: '1px solid rgba(255,255,255,0.42)', transition: 'all 0.3s ease', display: 'inline-block' }}
+              style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.65rem', fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#FFF', background: 'transparent', textDecoration: 'none', padding: 'clamp(0.75rem,2vw,0.9rem) clamp(1.25rem,3vw,2rem)', border: '1px solid rgba(255,255,255,0.42)', transition: 'all 0.3s ease', display: 'inline-flex', alignItems: 'center', minHeight: '44px' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = '#C084FC'; e.currentTarget.style.background = 'rgba(192,132,252,0.1)' }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.42)'; e.currentTarget.style.background = 'transparent' }}
             >View All</Link>
@@ -177,24 +178,33 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* SLIDE COUNTER */}
-      <div style={{ position: 'absolute', top: `${NAVBAR_H + 16}px`, right: '2.5rem', zIndex: 20, display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+      {/* SLIDE COUNTER — desktop only */}
+      <div className="sl-counter" style={{ position: 'absolute', top: `${NAVBAR_H + 16}px`, right: '2.5rem', zIndex: 20, display: 'flex', alignItems: 'baseline', gap: '4px' }}>
         <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.6rem', fontWeight: 400, color: 'rgba(255,255,255,0.85)', lineHeight: 1, fontStyle: 'italic' }}>{String(current + 1).padStart(2, '0')}</span>
         <span style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.65rem', color: 'rgba(255,255,255,0.35)' }}>/ {String(slides.length).padStart(2, '0')}</span>
       </div>
 
-      {/* BOTTOM BAR */}
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 20, display: 'flex', alignItems: 'stretch', height: `${BOTTOM_BAR_H}px`, background: 'rgba(26,10,46,0.55)', backdropFilter: 'blur(10px)', borderTop: '1px solid rgba(192,132,252,0.15)' }}>
-        {slides.map((s, i) => (
-          <button key={s.id} onClick={() => goTo(i)} style={{ flex: 1, background: 'none', border: 'none', borderRight: i < slides.length - 1 ? '1px solid rgba(192,132,252,0.12)' : 'none', cursor: 'pointer', padding: '0 1.2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '3px', position: 'relative', overflow: 'hidden', transition: 'background 0.3s' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(192,132,252,0.08)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
-          >
-            <div style={{ position: 'absolute', bottom: 0, left: 0, height: '2px', background: i === current ? '#C084FC' : 'rgba(192,132,252,0.2)', width: i === current ? `${progress}%` : '100%', transition: i === current ? 'width 0.05s linear' : 'none' }} />
-            <span style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.52rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: i === current ? '#C084FC' : 'rgba(255,255,255,0.35)', transition: 'color 0.3s' }}>{String(i + 1).padStart(2, '0')}</span>
-            <span style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.75rem', fontWeight: i === current ? 600 : 400, color: i === current ? '#FFFFFF' : 'rgba(255,255,255,0.4)', transition: 'color 0.3s', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.eyebrow}</span>
-          </button>
-        ))}
+      {/* BOTTOM BAR — desktop: full tab bar / mobile: dots */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 20, height: `${BOTTOM_BAR_H}px`, background: 'rgba(26,10,46,0.55)', backdropFilter: 'blur(10px)', borderTop: '1px solid rgba(192,132,252,0.15)' }}>
+        {/* Desktop tabs */}
+        <div className="sl-bottom-tabs" style={{ display: 'flex', height: '100%', alignItems: 'stretch' }}>
+          {slides.map((s, i) => (
+            <button key={s.id} onClick={() => goTo(i)} style={{ flex: 1, background: 'none', border: 'none', borderRight: i < slides.length - 1 ? '1px solid rgba(192,132,252,0.12)' : 'none', cursor: 'pointer', padding: '0 1.2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '3px', position: 'relative', overflow: 'hidden', transition: 'background 0.3s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(192,132,252,0.08)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+            >
+              <div style={{ position: 'absolute', bottom: 0, left: 0, height: '2px', background: i === current ? '#C084FC' : 'rgba(192,132,252,0.2)', width: i === current ? `${progress}%` : '100%', transition: i === current ? 'width 0.05s linear' : 'none' }} />
+              <span style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.52rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: i === current ? '#C084FC' : 'rgba(255,255,255,0.35)', transition: 'color 0.3s' }}>{String(i + 1).padStart(2, '0')}</span>
+              <span style={{ fontFamily: "'Jost', sans-serif", fontSize: '0.75rem', fontWeight: i === current ? 600 : 400, color: i === current ? '#FFFFFF' : 'rgba(255,255,255,0.4)', transition: 'color 0.3s', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.eyebrow}</span>
+            </button>
+          ))}
+        </div>
+        {/* Mobile dots */}
+        <div className="sl-bottom-dots" style={{ display: 'none', height: '100%', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+          {slides.map((_, i) => (
+            <button key={i} onClick={() => goTo(i)} style={{ width: i === current ? '24px' : '8px', height: '8px', borderRadius: '100px', background: i === current ? '#C084FC' : 'rgba(255,255,255,0.35)', border: 'none', cursor: 'pointer', transition: 'all 0.3s', padding: 0, minHeight: 'auto' }} />
+          ))}
+        </div>
       </div>
 
       <style>{`
@@ -204,6 +214,12 @@ export default function HeroSection() {
         @keyframes sl-contentUp {
           from { opacity: 0; transform: translateY(22px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 640px) {
+          .sl-bottom-tabs { display: none !important; }
+          .sl-bottom-dots { display: flex !important; }
+          .sl-counter     { display: none !important; }
+          .sl-hero-sub    { display: none; }
         }
       `}</style>
     </section>

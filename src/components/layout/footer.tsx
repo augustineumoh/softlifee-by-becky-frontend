@@ -2,22 +2,22 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const quickLinks = [
-  { label: 'New Arrivals',   to: '/new-arrivals' },
-  { label: 'Shop All',       to: '/shop' },
-  { label: 'Home Essentials',to: '/shop/home-essentials' },
-  { label: 'Skincare',       to: '/shop/skincare' },
-  { label: 'Accessories',    to: '/shop/accessories' },
-  { label: "Women's Essentials", to: '/shop/womens-essentials' },
-  { label: "Gift Ideas", to: '/giftideas' },
+  { label: 'New Arrivals',        to: '/new-arrivals' },
+  { label: 'Shop All',            to: '/shop' },
+  { label: 'Home Essentials',     to: '/shop/home-essentials' },
+  { label: 'Skincare',            to: '/shop/skincare' },
+  { label: 'Accessories',         to: '/shop/accessories' },
+  { label: "Women's Essentials",  to: '/shop/womens-essentials' },
+  { label: 'Gift Ideas',          to: '/giftideas' },
 ]
 
 const helpLinks = [
-  { label: 'About Us',        to: '/about' },
-  { label: 'Contact Us',      to: '/contact' },
-  { label: 'FAQs',            to: '/faqs' },
-  { label: 'Track Your Order',to: '/account/orders' },
-  { label: 'Returns Policy',  to: '/returns-policy' },
-  { label: 'Privacy Policy',  to: '/privacy-policy' },
+  { label: 'About Us',         to: '/about' },
+  { label: 'Contact Us',       to: '/contact' },
+  { label: 'FAQs',             to: '/faqs' },
+  { label: 'Track Your Order', to: '/account/orders' },
+  { label: 'Returns Policy',   to: '/returns-policy' },
+  { label: 'Privacy Policy',   to: '/privacy-policy' },
 ]
 
 const socials = [
@@ -61,7 +61,6 @@ const socials = [
   },
 ]
 
-// Payment icons as SVG shapes
 function PaymentBadge({ label }: { label: string }) {
   return (
     <div style={{
@@ -79,73 +78,86 @@ function PaymentBadge({ label }: { label: string }) {
   )
 }
 
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+      style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease', flexShrink: 0 }}>
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  )
+}
+
+function AccordionSection({ title, children }: { title: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="ft-accordion">
+      {/* Desktop: always visible header */}
+      <h4 className="ft-section-title" style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A1A2E', marginBottom: '1.4rem' }}>
+        {title}
+      </h4>
+
+      {/* Mobile: tappable header */}
+      <button className="ft-accordion-btn" onClick={() => setOpen(o => !o)}
+        style={{ width: '100%', background: 'none', border: 'none', borderBottom: '1px solid rgba(138,79,177,0.1)', padding: '1rem 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', color: '#1A1A2E', minHeight: '48px' }}>
+        <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' }}>{title}</span>
+        <ChevronIcon open={open} />
+      </button>
+
+      <div className={`ft-accordion-body${open ? ' ft-open' : ''}`}>
+        {children}
+      </div>
+    </div>
+  )
+}
+
 export default function Footer() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
   return (
-    <footer style={{
-      background: 'linear-gradient(180deg, #F3E8FF 0%, #FAF7FF 40%, #FFFFFF 100%)',
-      borderTop: '1px solid rgba(138,79,177,0.12)',
-    }}>
+    <footer style={{ background: 'linear-gradient(180deg, #F3E8FF 0%, #FAF7FF 40%, #FFFFFF 100%)', borderTop: '1px solid rgba(138,79,177,0.12)' }}>
 
-      {/* ── TOP NEWSLETTER BAND ──────────────────────────────── */}
-      <div style={{
-        background: 'linear-gradient(135deg, #8A4FB1 0%, #5B21B6 100%)',
-        padding: '3.5rem clamp(1.5rem,6vw,5rem)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '2rem',
-        flexWrap: 'wrap',
-      }}>
-        <div>
-          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: '0.5rem' }}>
-            Join the Community
-          </p>
-          <h3 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.5rem,3vw,2.2rem)', fontWeight: 500, fontStyle: 'italic', color: '#FFFFFF', margin: 0, lineHeight: 1.2 }}>
-            Get exclusive deals & new arrivals
-          </h3>
-        </div>
-        {submitted ? (
-          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.95rem', color: '#E8D5F5', fontWeight: 500 }}>
-            ✓ You're in! Welcome to the Soft Lifee family 🌸
-          </p>
-        ) : (
-          <div style={{ display: 'flex', gap: 0, flex: '0 1 420px', minWidth: '260px' }}>
-            <input
-              type="email"
-              placeholder="Your email address"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && email && setSubmitted(true)}
-              style={{ flex: 1, padding: '0.9rem 1.2rem', fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', border: 'none', outline: 'none', background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', borderRadius: '2px 0 0 2px' }}
-            />
-            <button
-              onClick={() => email && setSubmitted(true)}
-              style={{ padding: '0.9rem 1.6rem', fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', background: '#FFFFFF', color: '#5B21B6', border: 'none', cursor: 'pointer', borderRadius: '0 2px 2px 0', whiteSpace: 'nowrap', transition: 'all 0.25s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#E8D5F5' }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF' }}
-            >
-              Subscribe
-            </button>
+      {/* ── NEWSLETTER BAND ── */}
+      <div style={{ background: 'linear-gradient(135deg, #8A4FB1 0%, #5B21B6 100%)', padding: 'clamp(2rem,5vw,3.5rem) clamp(1.25rem,6vw,5rem)' }}>
+        <div className="ft-newsletter">
+          <div className="ft-newsletter-text">
+            <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: '0.5rem' }}>
+              Join the Community
+            </p>
+            <h3 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.4rem,3vw,2.2rem)', fontWeight: 500, fontStyle: 'italic', color: '#FFFFFF', margin: 0, lineHeight: 1.2 }}>
+              Get exclusive deals &amp; new arrivals
+            </h3>
           </div>
-        )}
+          {submitted ? (
+            <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.95rem', color: '#E8D5F5', fontWeight: 500 }}>
+              ✓ You're in! Welcome to the Soft Lifee family 🌸
+            </p>
+          ) : (
+            <div className="ft-newsletter-form">
+              <input
+                type="email"
+                placeholder="Your email address"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && email && setSubmitted(true)}
+                style={{ flex: 1, padding: '0.9rem 1.2rem', fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', border: 'none', outline: 'none', background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', borderRadius: '2px 0 0 2px', minWidth: 0 }}
+              />
+              <button onClick={() => email && setSubmitted(true)}
+                style={{ padding: '0.9rem 1.4rem', fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', background: '#FFFFFF', color: '#5B21B6', border: 'none', cursor: 'pointer', borderRadius: '0 2px 2px 0', whiteSpace: 'nowrap', transition: 'background 0.25s', flexShrink: 0 }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#E8D5F5' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF' }}>
+                Subscribe
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* ── MAIN FOOTER GRID ─────────────────────────────────── */}
-      <div style={{
-        maxWidth: '1360px',
-        margin: '0 auto',
-        padding: '5rem clamp(1.5rem,6vw,5rem) 3rem',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '3rem',
-      }}>
+      {/* ── MAIN FOOTER GRID ── */}
+      <div className="ft-grid" style={{ maxWidth: '1360px', margin: '0 auto', padding: 'clamp(2.5rem,5vw,5rem) clamp(1.25rem,6vw,5rem) clamp(1.5rem,3vw,3rem)' }}>
 
-        {/* ── BRAND COLUMN ── */}
-        <div style={{ gridColumn: 'span 1' }}>
-          {/* Logo text */}
+        {/* Brand column */}
+        <div className="ft-brand">
           <div style={{ marginBottom: '1.2rem' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '2px' }}>
               <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.8rem', fontWeight: 600, color: '#1A1A2E', letterSpacing: '0.02em' }}>Soft</span>
@@ -159,43 +171,20 @@ export default function Footer() {
           <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.83rem', fontWeight: 300, color: '#5B21B6', lineHeight: 1.8, marginBottom: '1.8rem', maxWidth: '260px' }}>
             Curated essentials for your home, skin, and everyday ritual. Live softly. Live well.
           </p>
-
-          {/* Socials */}
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             {socials.map(s => (
               <a key={s.label} href={s.to} target="_blank" rel="noreferrer" title={s.label}
-                style={{
-                  width: '38px', height: '38px',
-                  borderRadius: '50%',
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(138,79,177,0.2)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#8A4FB1',
-                  textDecoration: 'none',
-                  transition: 'all 0.25s',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = '#8A4FB1'
-                  e.currentTarget.style.color = '#FFFFFF'
-                  e.currentTarget.style.borderColor = '#8A4FB1'
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = '#FFFFFF'
-                  e.currentTarget.style.color = '#8A4FB1'
-                  e.currentTarget.style.borderColor = 'rgba(138,79,177,0.2)'
-                }}
-              >
+                style={{ width: '42px', height: '42px', borderRadius: '50%', background: '#FFFFFF', border: '1px solid rgba(138,79,177,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8A4FB1', textDecoration: 'none', transition: 'all 0.25s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#8A4FB1'; e.currentTarget.style.color = '#FFFFFF'; e.currentTarget.style.borderColor = '#8A4FB1' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.color = '#8A4FB1'; e.currentTarget.style.borderColor = 'rgba(138,79,177,0.2)' }}>
                 {s.icon}
               </a>
             ))}
           </div>
         </div>
 
-        {/* ── QUICK LINKS ── */}
-        <div>
-          <h4 style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A1A2E', marginBottom: '1.4rem' }}>
-            Shop
-          </h4>
+        {/* Shop links */}
+        <AccordionSection title="Shop">
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
             {quickLinks.map(link => (
               <li key={link.to}>
@@ -207,13 +196,10 @@ export default function Footer() {
               </li>
             ))}
           </ul>
-        </div>
+        </AccordionSection>
 
-        {/* ── HELP LINKS ── */}
-        <div>
-          <h4 style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A1A2E', marginBottom: '1.4rem' }}>
-            Help
-          </h4>
+        {/* Help links */}
+        <AccordionSection title="Help">
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
             {helpLinks.map(link => (
               <li key={link.to}>
@@ -225,11 +211,11 @@ export default function Footer() {
               </li>
             ))}
           </ul>
-        </div>
+        </AccordionSection>
 
-        {/* ── CONTACT INFO ── */}
-        <div>
-          <h4 style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A1A2E', marginBottom: '1.4rem' }}>
+        {/* Contact */}
+        <div className="ft-contact">
+          <h4 className="ft-section-title" style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#1A1A2E', marginBottom: '1.4rem' }}>
             Contact
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -253,7 +239,7 @@ export default function Footer() {
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
                 <span style={{ color: '#8A4FB1', lineHeight: 1, marginTop: '2px', flexShrink: 0 }}>{item.icon}</span>
                 {item.href ? (
-                  <a href={item.href} style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.83rem', fontWeight: 300, color: '#5B21B6', textDecoration: 'none', lineHeight: 1.5, transition: 'color 0.2s' }}
+                  <a href={item.href} style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.83rem', fontWeight: 300, color: '#5B21B6', textDecoration: 'none', lineHeight: 1.5, transition: 'color 0.2s', wordBreak: 'break-all' }}
                     onMouseEnter={e => { e.currentTarget.style.color = '#8A4FB1' }}
                     onMouseLeave={e => { e.currentTarget.style.color = '#5B21B6' }}>
                     {item.text}
@@ -267,34 +253,105 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ── BOTTOM BAR ───────────────────────────────────────── */}
-      <div style={{
-        borderTop: '1px solid rgba(138,79,177,0.1)',
-        padding: '1.5rem clamp(1.5rem,6vw,5rem)',
-        maxWidth: '1360px',
-        margin: '0 auto',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1.2rem',
-      }}>
-        {/* Copyright */}
-        <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', fontWeight: 300, color: '#8A4FB1', margin: 0 }}>
-          © {new Date().getFullYear()} Soft Lifee by Becky. All rights reserved.
-        </p>
-
-        {/* Payment icons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 500, color: '#8A4FB1', marginRight: '0.25rem', letterSpacing: '0.05em' }}>Secured by</span>
-          {['Paystack', 'Visa', 'Mastercard', 'Verve'].map(p => (
-            <PaymentBadge key={p} label={p} />
-          ))}
+      {/* ── BOTTOM BAR ── */}
+      <div style={{ borderTop: '1px solid rgba(138,79,177,0.1)', padding: '1.25rem clamp(1.25rem,6vw,5rem)', maxWidth: '1360px', margin: '0 auto' }}>
+        <div className="ft-bottom">
+          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', fontWeight: 300, color: '#8A4FB1', margin: 0 }}>
+            © {new Date().getFullYear()} Soft Lifee by Becky. All rights reserved.
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 500, color: '#8A4FB1', letterSpacing: '0.05em' }}>Secured by</span>
+            {['Paystack', 'Visa', 'Mastercard', 'Verve'].map(p => (
+              <PaymentBadge key={p} label={p} />
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Closing strip */}
       <div style={{ height: '4px', background: 'linear-gradient(90deg, #8A4FB1 0%, #5B21B6 50%, #8A4FB1 100%)' }} />
+
+      <style>{`
+        /* Newsletter band */
+        .ft-newsletter {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1.5rem;
+          flex-wrap: wrap;
+        }
+        .ft-newsletter-text { flex: 1; min-width: 220px; }
+        .ft-newsletter-form {
+          display: flex;
+          flex: 0 1 420px;
+          min-width: 240px;
+        }
+
+        /* Main grid */
+        .ft-grid {
+          display: grid;
+          grid-template-columns: 1.4fr 1fr 1fr 1fr;
+          gap: 2.5rem;
+        }
+
+        /* Bottom bar */
+        .ft-bottom {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+
+        /* Accordion — desktop: accordion controls hidden, links always shown */
+        .ft-accordion-btn  { display: none; }
+        .ft-accordion-body { display: block !important; }
+        .ft-section-title  { display: block; }
+
+        /* Contact — always use static heading */
+        .ft-contact .ft-section-title { display: block; }
+
+        @media (max-width: 768px) {
+          /* Newsletter stacks vertically */
+          .ft-newsletter { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+          .ft-newsletter-form { min-width: 0; width: 100%; flex: unset; }
+
+          /* Grid: single column */
+          .ft-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
+            padding-left: clamp(1.25rem, 5vw, 2rem) !important;
+            padding-right: clamp(1.25rem, 5vw, 2rem) !important;
+          }
+
+          /* Brand: bottom border */
+          .ft-brand {
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(138,79,177,0.1);
+            margin-bottom: 0.25rem;
+          }
+
+          /* Accordion sections: show toggle button, hide static title */
+          .ft-accordion .ft-section-title { display: none !important; }
+          .ft-accordion-btn  { display: flex !important; }
+          .ft-accordion-body {
+            display: none !important;
+            padding: 1rem 0 0.5rem;
+          }
+          .ft-accordion-body.ft-open { display: block !important; }
+
+          /* Contact: static heading on mobile too (no accordion) */
+          .ft-contact { padding-top: 1.5rem; }
+          .ft-contact .ft-section-title { display: block !important; }
+
+          /* Bottom bar stacks */
+          .ft-bottom { flex-direction: column; align-items: flex-start; gap: 0.85rem; }
+        }
+
+        @media (max-width: 1024px) and (min-width: 769px) {
+          .ft-grid { grid-template-columns: 1fr 1fr; }
+        }
+      `}</style>
     </footer>
   )
 }
