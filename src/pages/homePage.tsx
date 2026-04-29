@@ -244,9 +244,9 @@ export default function HomePage() {
 
       {/* ── CATEGORY SLIDER ─────────────────────────────────── */}
       <section className="hp-section-lg" style={{ padding: 'clamp(3rem,6vw,6rem) 0 clamp(3rem,6vw,6rem) clamp(1.25rem,6vw,5rem)', background: 'linear-gradient(160deg, #FAF7FF 0%, #EDE0F7 60%, #FAF7FF 100%)' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '3rem', paddingRight: 'clamp(1.5rem,6vw,5rem)' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '2rem', paddingRight: 'clamp(1.25rem,6vw,5rem)' }}>
           <SectionLabel eyebrow="Explore" title={<>Shop by<br />Category</>} />
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className="hp-cat-arrows" style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
             {[{ dir: -1, pts: '15 18 9 12 15 6' }, { dir: 1, pts: '9 18 15 12 9 6' }].map(({ dir, pts }) => {
               const disabled = dir === -1 ? catIdx === 0 : catIdx >= categories.length - VISIBLE_CATS
               return (
@@ -285,7 +285,7 @@ export default function HomePage() {
             ))}
           </div>
         </Reveal>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: '2rem 1.5rem' }}>
+        <div className="hp-grid-sm" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: '2rem 1.5rem' }}>
           {filtered.map((p, i) => <ProductCard key={p.id} product={p} delay={i * 0.07} />)}
         </div>
       </section>
@@ -400,7 +400,7 @@ export default function HomePage() {
             <Link to="/new-arrivals" style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#8A4FB1', textDecoration: 'none', borderBottom: '1px solid #8A4FB1', paddingBottom: '2px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>See All <FaArrowRight /></Link>
           </Reveal>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: '2rem 1.5rem' }}>
+        <div className="hp-grid-sm" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: '2rem 1.5rem' }}>
           {newArrivals.map((p, i) => <ProductCard key={p.id} product={p} delay={i * 0.08} />)}
         </div>
       </section>
@@ -438,19 +438,24 @@ export default function HomePage() {
           .hp-section-md  { padding-top: 3rem !important; padding-bottom: 3rem !important; }
           .hp-section-lg  { padding-top: 3rem !important; padding-bottom: 3rem !important; }
 
-          /* Category slider: scrollable on mobile */
+          /* Category slider: scrollable snap on mobile */
+          .hp-cat-arrows { display: none !important; }
           .hp-cat-track {
             overflow-x: auto !important;
             scrollbar-width: none;
             -ms-overflow-style: none;
             scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
             padding-right: 1.25rem;
+            padding-bottom: 0.5rem;
           }
           .hp-cat-track::-webkit-scrollbar { display: none; }
           .hp-cat-track > div {
             transform: none !important;
             transition: none !important;
           }
+          /* Tighter best-seller grid on mobile: 2 columns */
+          .hp-grid-sm { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem !important; }
         }
 
         @media (max-width: 768px) {
@@ -466,7 +471,7 @@ function CategorySlideCard({ cat }: { cat: typeof categories[0] }) {
   const [hovered, setHovered] = useState(false)
   return (
     <Link to={cat.to} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ display: 'block', position: 'relative', overflow: 'hidden', textDecoration: 'none', background: '#EDE0F7', width: 'calc(33.333vw - 2rem)', minWidth: '260px', maxWidth: '420px', height: '420px', flexShrink: 0, borderRadius: '4px', scrollSnapAlign: 'start' }}>
+      style={{ display: 'block', position: 'relative', overflow: 'hidden', textDecoration: 'none', background: '#EDE0F7', width: 'clamp(220px, 33.333vw, 420px)', height: 'clamp(280px, 42vw, 420px)', flexShrink: 0, borderRadius: '4px', scrollSnapAlign: 'start' }}>
       <img src={cat.image} alt={cat.label} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94)', transform: hovered ? 'scale(1.07)' : 'scale(1)' }} />
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,26,46,0.8) 0%, transparent 55%)' }} />
       <div style={{ position: 'absolute', bottom: '1.8rem', left: '1.5rem' }}>

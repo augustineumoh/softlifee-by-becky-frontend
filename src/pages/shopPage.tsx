@@ -366,7 +366,7 @@ export default function ShopPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: 'clamp(1.25rem,3vw,2rem) clamp(1.25rem,6vw,5rem)' }}>
+      <div className="sl-shop-body" style={{ maxWidth: '1400px', margin: '0 auto', padding: 'clamp(1.25rem,3vw,2rem) clamp(1.25rem,6vw,5rem)' }}>
 
         {/* ── DESKTOP FILTER BAR ── */}
         <div className="sl-desktop-filters" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', background: '#FFF', padding: '0.85rem 1.25rem', borderRadius: '12px', border: '1px solid rgba(138,79,177,0.1)', boxShadow: '0 2px 12px rgba(138,79,177,0.04)', flexWrap: 'wrap' }}>
@@ -499,12 +499,16 @@ export default function ShopPage() {
           align-items: start;
         }
 
-        @media (max-width: 500px) {
+        @media (max-width: 640px) {
           .sl-product-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 0.65rem;
+            gap: 0.6rem;
           }
           .sl-mobile-add-btn { display: flex !important; }
+        }
+
+        @media (max-width: 400px) {
+          .sl-product-grid { gap: 0.5rem; }
         }
 
         @media (max-width: 768px) {
@@ -512,6 +516,8 @@ export default function ShopPage() {
           .sl-desktop-count   { display: none; }
           .sl-mobile-toolbar  { display: flex !important; }
           .sl-search-label    { display: none; }
+          /* Tighter outer padding on mobile */
+          .sl-shop-body { padding-left: 1rem !important; padding-right: 1rem !important; }
         }
 
         @media (min-width: 769px) {

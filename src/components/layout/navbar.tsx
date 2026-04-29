@@ -176,6 +176,18 @@ export default function Navbar() {
         .sl-search-result:hover { background: #F3E8FF !important; }
         .sl-icon-btn:hover { opacity: 0.7; }
         .sl-icon-btn { transition: opacity 0.2s; }
+
+        /* Mobile navbar overrides */
+        @media (max-width: 900px) {
+          .sl-nav-inner { padding: 0 1.25rem !important; }
+          .sl-nav-logo  { height: 130px !important; }
+          .sl-nav-icons { gap: 1rem !important; }
+        }
+        @media (max-width: 480px) {
+          .sl-nav-inner { padding: 0 1rem !important; }
+          .sl-nav-logo  { height: 110px !important; }
+          .sl-nav-icons { gap: 0.75rem !important; }
+        }
       `}</style>
 
       <nav style={{
@@ -186,7 +198,7 @@ export default function Navbar() {
         borderBottom:    scrolled || shopOpen ? '1px solid rgba(138,79,177,0.15)' : '1px solid transparent',
         boxShadow:       scrolled ? '0 2px 24px rgba(59,16,88,0.08)' : 'none',
       }}>
-        <div style={{
+        <div className="sl-nav-inner" style={{
           maxWidth: '1320px', margin: '0 auto',
           padding: '0 2rem', height: '68px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -217,12 +229,13 @@ export default function Navbar() {
             <img
               src={isLight && !hasLightHero ? img1 : img2}
               alt="Soft Lifee by Becky"
+              className="sl-nav-logo"
               style={{ height: '190px', width: 'auto', display: 'block', objectFit: 'contain', transition: 'opacity 0.4s' }}
             />
           </Link>
 
           {/* ── RIGHT ICONS ── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.4rem', flex: 1, justifyContent: 'flex-end' }}>
+          <div className="sl-nav-icons" style={{ display: 'flex', alignItems: 'center', gap: '1.4rem', flex: 1, justifyContent: 'flex-end' }}>
 
             {/* Search button */}
             <button className="sl-icon-btn" title="Search"
