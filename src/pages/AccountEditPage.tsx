@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { FiCamera, FiSave, FiArrowLeft, FiUser, FiPhone } from 'react-icons/fi'
+import { FiCamera, FiSave, FiArrowLeft, FiUser, FiPhone, FiCheck } from 'react-icons/fi'
 import { useAuth } from '../store/authStore'
 import { authAPI, getCloudinaryUrl } from '../services/api'
 
@@ -34,6 +34,7 @@ export default function AccountEditPage() {
     if (file.size > 5 * 1024 * 1024) { setError('Image must be under 5MB.'); return }
     setAvatarFile(file)
     setAvatarPreview(URL.createObjectURL(file))
+    setError('')
   }
 
   const handleSave = async () => {
@@ -41,14 +42,10 @@ export default function AccountEditPage() {
     setError('')
     setSuccess(false)
     try {
-      // Update profile fields
       await authAPI.updateProfile(form)
-
-      // Upload avatar if changed
       if (avatarFile) {
         await authAPI.uploadAvatar(avatarFile)
       }
-
       await loadUser()
       setSuccess(true)
       setTimeout(() => navigate('/account'), 1500)
@@ -74,47 +71,71 @@ export default function AccountEditPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#FAF7FF', paddingTop: '68px' }}>
-      <div style={{ maxWidth: '560px', margin: '0 auto', padding: '2.5rem 1.5rem' }}>
 
-        {/* Back */}
-        <Link to="/account" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8A4FB1', textDecoration: 'none', marginBottom: '1.5rem' }}>
-          <FiArrowLeft size={14}/> Back to Account
-        </Link>
+      {/* page header band */}
+      <div style={{ background: 'linear-gradient(135deg, #1A1A2E 0%, #3D1A6E 60%, #5B21B6 100%)', padding: 'clamp(1.5rem,4vw,2.5rem) clamp(1.25rem,6vw,5rem)' }}>
+        <div style={{ maxWidth: '560px', margin: '0 auto' }}>
+          <Link to="/account" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', textDecoration: 'none', marginBottom: '1rem', transition: 'color 0.2s' }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#D4AF37' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.5)' }}>
+            <FiArrowLeft size={13}/> Back to Account
+          </Link>
+          <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: 'clamp(1.8rem,4vw,2.4rem)', fontWeight: 700, color: '#FFF', margin: 0 }}>Edit Profile</h1>
+          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.75rem', fontWeight: 300, color: 'rgba(255,255,255,0.4)', margin: '6px 0 0' }}>Update your personal details and profile photo</p>
+        </div>
+      </div>
 
-        <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '2.2rem', fontWeight: 600, color: '#1A1A2E', margin: '0 0 2rem' }}>Edit Profile</h1>
+      <div style={{ maxWidth: '560px', margin: '0 auto', padding: 'clamp(1.5rem,4vw,2.5rem) clamp(1.25rem,4vw,1.5rem)' }}>
 
-        <div style={{ background: '#FFF', borderRadius: '16px', padding: '2rem', border: '1px solid rgba(138,79,177,0.1)', boxShadow: '0 4px 24px rgba(138,79,177,0.06)' }}>
+        {/* Avatar section */}
+        <div style={{ background: '#FFF', borderRadius: '16px', padding: 'clamp(1.5rem,4vw,2rem)', border: '1px solid rgba(138,79,177,0.1)', marginBottom: '1.25rem', boxShadow: '0 2px 16px rgba(138,79,177,0.06)' }}>
+          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.4)', margin: '0 0 1.25rem' }}>Profile Photo</p>
 
-          {/* Avatar upload */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
-            <div style={{ position: 'relative', marginBottom: '0.75rem' }}>
-              {currentAvatar ? (
-                <img src={currentAvatar} alt="Profile" style={{ width: '96px', height: '96px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #8A4FB1' }} />
-              ) : (
-                <div style={{ width: '96px', height: '96px', borderRadius: '50%', background: 'linear-gradient(135deg, #8A4FB1, #5B21B6)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid #8A4FB1' }}>
-                  <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2rem', fontWeight: 700, color: '#FFF' }}>{initials.toUpperCase() || '?'}</span>
-                </div>
-              )}
-              {/* Camera button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(1rem,4vw,1.5rem)', flexWrap: 'wrap' }}>
+            {/* avatar preview */}
+            <div style={{ position: 'relative', flexShrink: 0 }}>
+              <div style={{ width: '90px', height: '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #8A4FB1', boxShadow: '0 4px 16px rgba(138,79,177,0.2)' }}>
+                {currentAvatar ? (
+                  <img src={currentAvatar} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #8A4FB1, #5B21B6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2rem', fontWeight: 700, color: '#FFF' }}>{initials.toUpperCase() || '?'}</span>
+                  </div>
+                )}
+              </div>
               <button onClick={() => fileRef.current?.click()}
-                style={{ position: 'absolute', bottom: '0', right: '0', width: '30px', height: '30px', borderRadius: '50%', background: '#8A4FB1', border: '2px solid #FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }}
+                style={{ position: 'absolute', bottom: '0', right: '0', width: '28px', height: '28px', borderRadius: '50%', background: '#8A4FB1', border: '2px solid #FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#5B21B6' }}
                 onMouseLeave={e => { e.currentTarget.style.background = '#8A4FB1' }}>
-                <FiCamera size={13} color="#FFF" />
+                <FiCamera size={12} color="#FFF" />
               </button>
             </div>
-            <button onClick={() => fileRef.current?.click()}
-              style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8A4FB1', background: '#F3E8FF', border: 'none', borderRadius: '100px', padding: '6px 16px', cursor: 'pointer' }}>
-              {avatarPreview ? 'Change Photo' : 'Upload Photo'}
-            </button>
-            <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', color: 'rgba(26,26,46,0.4)', marginTop: '4px' }}>JPG, PNG or GIF · Max 5MB</p>
-            <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: 'none' }} />
-          </div>
 
-          {/* Form fields */}
+            {/* upload info */}
+            <div style={{ flex: 1, minWidth: '180px' }}>
+              <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.82rem', fontWeight: 600, color: '#1A1A2E', margin: '0 0 4px' }}>
+                {avatarPreview ? 'New photo selected' : 'Upload a profile photo'}
+              </p>
+              <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', color: 'rgba(26,26,46,0.45)', margin: '0 0 0.75rem', lineHeight: 1.5 }}>JPG, PNG or GIF · Max 5MB</p>
+              <button onClick={() => fileRef.current?.click()}
+                style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8A4FB1', background: '#F3E8FF', border: '1px solid rgba(138,79,177,0.2)', borderRadius: '8px', padding: '0.5rem 1rem', cursor: 'pointer', transition: 'background 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#EDD9FF' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#F3E8FF' }}>
+                {avatarPreview ? 'Change Photo' : 'Choose Photo'}
+              </button>
+            </div>
+          </div>
+          <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: 'none' }} />
+        </div>
+
+        {/* Personal info section */}
+        <div style={{ background: '#FFF', borderRadius: '16px', padding: 'clamp(1.5rem,4vw,2rem)', border: '1px solid rgba(138,79,177,0.1)', boxShadow: '0 2px 16px rgba(138,79,177,0.06)' }}>
+          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.4)', margin: '0 0 1.25rem' }}>Personal Information</p>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+
             {/* Name row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px,1fr))', gap: '1rem' }}>
               {[
                 { key: 'first_name', label: 'First Name', placeholder: 'Becky' },
                 { key: 'last_name',  label: 'Last Name',  placeholder: 'Smith' },
@@ -125,8 +146,8 @@ export default function AccountEditPage() {
                     <FiUser size={14} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#8A4FB1' }} />
                     <input value={(form as any)[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
                       placeholder={f.placeholder} style={inp}
-                      onFocus={e => { e.target.style.borderColor = '#8A4FB1' }}
-                      onBlur={e  => { e.target.style.borderColor = 'rgba(138,79,177,0.2)' }} />
+                      onFocus={e => { e.target.style.borderColor = '#8A4FB1'; e.target.style.background = '#FFF' }}
+                      onBlur={e  => { e.target.style.borderColor = 'rgba(138,79,177,0.2)'; e.target.style.background = '#FAF7FF' }} />
                   </div>
                 </div>
               ))}
@@ -134,9 +155,11 @@ export default function AccountEditPage() {
 
             {/* Email (read only) */}
             <div>
-              <label style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#1A1A2E', display: 'block', marginBottom: '6px' }}>Email <span style={{ opacity: 0.4, fontWeight: 400 }}>(cannot be changed)</span></label>
+              <label style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#1A1A2E', display: 'block', marginBottom: '6px' }}>
+                Email <span style={{ opacity: 0.4, fontWeight: 400, letterSpacing: 0, textTransform: 'none' }}>(cannot be changed)</span>
+              </label>
               <input value={user.email} readOnly
-                style={{ ...inp, paddingLeft: '1rem', background: 'rgba(138,79,177,0.04)', color: 'rgba(26,26,46,0.5)', cursor: 'not-allowed' }} />
+                style={{ ...inp, paddingLeft: '1rem', background: 'rgba(138,79,177,0.04)', color: 'rgba(26,26,46,0.5)', cursor: 'not-allowed', borderStyle: 'dashed' }} />
             </div>
 
             {/* Phone */}
@@ -146,29 +169,41 @@ export default function AccountEditPage() {
                 <FiPhone size={14} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#8A4FB1' }} />
                 <input value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
                   placeholder="08012345678" style={inp}
-                  onFocus={e => { e.target.style.borderColor = '#8A4FB1' }}
-                  onBlur={e  => { e.target.style.borderColor = 'rgba(138,79,177,0.2)' }} />
+                  onFocus={e => { e.target.style.borderColor = '#8A4FB1'; e.target.style.background = '#FFF' }}
+                  onBlur={e  => { e.target.style.borderColor = 'rgba(138,79,177,0.2)'; e.target.style.background = '#FAF7FF' }} />
               </div>
             </div>
 
             {/* Error / Success */}
             {error && (
-              <div style={{ background: '#FFF1F2', border: '1px solid rgba(190,18,60,0.2)', borderRadius: '8px', padding: '0.75rem 1rem' }}>
-                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', color: '#BE123C', margin: 0 }}>{error}</p>
+              <div style={{ background: '#FFF1F2', border: '1px solid rgba(190,18,60,0.2)', borderRadius: '10px', padding: '0.85rem 1rem', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                <span style={{ color: '#BE123C', flexShrink: 0, marginTop: '1px' }}>✕</span>
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', color: '#BE123C', margin: 0, lineHeight: 1.5 }}>{error}</p>
               </div>
             )}
             {success && (
-              <div style={{ background: '#DCFCE7', border: '1px solid rgba(22,163,74,0.2)', borderRadius: '8px', padding: '0.75rem 1rem' }}>
-                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', color: '#166534', margin: 0 }}>✅ Profile updated! Redirecting...</p>
+              <div style={{ background: '#DCFCE7', border: '1px solid rgba(22,163,74,0.2)', borderRadius: '10px', padding: '0.85rem 1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FiCheck size={15} color="#166534" />
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', color: '#166534', margin: 0 }}>Profile updated! Redirecting...</p>
               </div>
             )}
 
-            {/* Save button */}
-            <button onClick={handleSave} disabled={saving}
-              style={{ padding: '1rem', background: saving ? 'rgba(138,79,177,0.6)' : '#8A4FB1', color: '#FFF', border: 'none', borderRadius: '10px', fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.3s', marginTop: '0.5rem' }}>
-              <FiSave size={15} />
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
+            {/* Buttons */}
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', paddingTop: '0.25rem' }}>
+              <Link to="/account"
+                style={{ flex: '0 0 auto', padding: '0.9rem 1.5rem', background: 'transparent', color: '#5B21B6', border: '1.5px solid rgba(138,79,177,0.2)', borderRadius: '10px', fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', cursor: 'pointer', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#8A4FB1'; e.currentTarget.style.color = '#8A4FB1' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(138,79,177,0.2)'; e.currentTarget.style.color = '#5B21B6' }}>
+                Cancel
+              </Link>
+              <button onClick={handleSave} disabled={saving}
+                style={{ flex: 1, minWidth: '160px', padding: '0.9rem', background: saving ? 'rgba(138,79,177,0.6)' : '#8A4FB1', color: '#FFF', border: 'none', borderRadius: '10px', fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'background 0.3s' }}
+                onMouseEnter={e => { if (!saving) e.currentTarget.style.background = '#5B21B6' }}
+                onMouseLeave={e => { if (!saving) e.currentTarget.style.background = '#8A4FB1' }}>
+                <FiSave size={14} />
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
           </div>
         </div>
       </div>

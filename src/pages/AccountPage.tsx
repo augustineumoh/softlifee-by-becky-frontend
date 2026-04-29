@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { FiUser, FiPackage, FiHeart, FiMapPin, FiLogOut, FiEdit2, FiChevronRight } from 'react-icons/fi'
+import { FiUser, FiPackage, FiHeart, FiMapPin, FiLogOut, FiEdit2, FiChevronRight, FiCalendar, FiPhone, FiMail, FiShield } from 'react-icons/fi'
 import { useAuth } from '../store/authStore'
 import { getCloudinaryUrl } from '../services/api'
 import { useOrders } from '../hooks/useOrders'
@@ -38,86 +38,145 @@ export default function AccountPage() {
   }
 
   const tabs = [
-    { id: 'orders',   label: 'My Orders',  icon: <FiPackage size={16}/>,  count: orders.length },
-    { id: 'wishlist', label: 'Wishlist',    icon: <FiHeart size={16}/>,    count: wishlistItems.length },
-    { id: 'profile',  label: 'Profile',    icon: <FiUser size={16}/> },
-    { id: 'addresses',label: 'Addresses',  icon: <FiMapPin size={16}/> },
+    { id: 'orders',    label: 'My Orders',  icon: <FiPackage size={15}/>,  count: orders.length },
+    { id: 'wishlist',  label: 'Wishlist',   icon: <FiHeart size={15}/>,    count: wishlistItems.length },
+    { id: 'profile',   label: 'Profile',   icon: <FiUser size={15}/> },
+    { id: 'addresses', label: 'Addresses', icon: <FiMapPin size={15}/> },
   ]
+
+  const totalSpend = orders.reduce((s, o) => s + Number(o.total), 0)
 
   return (
     <div style={{ background: '#FAF7FF', minHeight: '100vh', paddingTop: '68px' }}>
-      {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg, #1A1A2E, #5B21B6)', padding: '3rem clamp(1.5rem,6vw,5rem) 2rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'linear-gradient(135deg, #8A4FB1, #D4AF37)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '2px solid rgba(255,255,255,0.3)' }}>
-              {user.avatar
-                ? <img src={getCloudinaryUrl(user.avatar, 200)} alt={user.first_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.5rem', fontWeight: 700, color: '#FFF' }}>{user.first_name?.[0]?.toUpperCase()}</span>
-              }
+
+      {/* ── HERO HEADER ─────────────────────────────────────────────────────── */}
+      <div style={{ background: 'linear-gradient(135deg, #1A1A2E 0%, #3D1A6E 60%, #5B21B6 100%)', padding: 'clamp(2rem,5vw,3.5rem) clamp(1.25rem,6vw,5rem) 0', position: 'relative', overflow: 'hidden' }}>
+
+        {/* decorative orbs */}
+        <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '280px', height: '280px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(212,175,55,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '0', left: '30%', width: '200px', height: '200px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(138,79,177,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative' }}>
+
+          {/* top row: avatar + name + logout */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.25rem', marginBottom: '2rem' }}>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+              {/* avatar */}
+              <div style={{ position: 'relative', flexShrink: 0 }}>
+                <div style={{ width: 'clamp(64px,10vw,80px)', height: 'clamp(64px,10vw,80px)', borderRadius: '50%', background: 'linear-gradient(135deg, #8A4FB1, #D4AF37)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '3px solid rgba(212,175,55,0.5)', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+                  {user.avatar
+                    ? <img src={getCloudinaryUrl(user.avatar, 200)} alt={user.first_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.5rem,4vw,2rem)', fontWeight: 700, color: '#FFF' }}>{user.first_name?.[0]?.toUpperCase()}</span>
+                  }
+                </div>
+                {/* gold ring accent */}
+                <div style={{ position: 'absolute', inset: '-4px', borderRadius: '50%', border: '1px solid rgba(212,175,55,0.3)', pointerEvents: 'none' }} />
+              </div>
+
+              <div>
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.8)', margin: '0 0 4px' }}>Welcome back</p>
+                <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.6rem,4vw,2.2rem)', fontWeight: 700, color: '#FFFFFF', margin: '0 0 4px', lineHeight: 1.1 }}>{user.first_name} {user.last_name}</h1>
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)', margin: 0 }}>{user.email}</p>
+              </div>
             </div>
-            <div>
-              <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.8rem', fontWeight: 600, color: '#FFFFFF', margin: 0 }}>Hi, {user.first_name}!</h1>
-              <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', color: 'rgba(255,255,255,0.5)', margin: '4px 0 0' }}>{user.email}</p>
+
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Link to="/account/edit"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1A1A2E', background: '#D4AF37', border: 'none', borderRadius: '8px', padding: '0.6rem 1rem', cursor: 'pointer', textDecoration: 'none', transition: 'all 0.2s', whiteSpace: 'nowrap' }}>
+                <FiEdit2 size={12}/> Edit Profile
+              </Link>
+              <button onClick={handleLogout}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '0.6rem 1rem', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}>
+                <FiLogOut size={12}/> Log Out
+              </button>
             </div>
           </div>
-          <button onClick={handleLogout}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '0.6rem 1rem', cursor: 'pointer', transition: 'all 0.2s' }}>
-            <FiLogOut size={14}/> Log Out
-          </button>
-        </div>
 
-        {/* Tabs */}
-        <div style={{ maxWidth: '1200px', margin: '2rem auto 0', display: 'flex', gap: '0', flexWrap: 'wrap' }}>
-          {tabs.map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 1.25rem', background: 'none', border: 'none', borderBottom: `2px solid ${activeTab === tab.id ? '#D4AF37' : 'transparent'}`, color: activeTab === tab.id ? '#D4AF37' : 'rgba(255,255,255,0.5)', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}>
-              {tab.icon} {tab.label}
-              {tab.count !== undefined && tab.count > 0 && (
-                <span style={{ background: activeTab === tab.id ? '#D4AF37' : 'rgba(255,255,255,0.2)', color: activeTab === tab.id ? '#1A1A2E' : '#FFF', borderRadius: '100px', padding: '1px 7px', fontSize: '0.6rem', fontWeight: 700 }}>{tab.count}</span>
-              )}
-            </button>
-          ))}
+          {/* stat cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
+            {[
+              { label: 'Total Orders',  value: orders.length,           icon: <FiPackage size={15}/> },
+              { label: 'Wishlist Items',value: wishlistItems.length,    icon: <FiHeart size={15}/> },
+              { label: 'Total Spent',   value: formatPrice(totalSpend), icon: <FiShield size={15}/> },
+              { label: 'Member Since',  value: new Date(user.date_joined).toLocaleDateString('en-NG', { month: 'short', year: 'numeric' }), icon: <FiCalendar size={15}/> },
+            ].map(stat => (
+              <div key={stat.label} style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '1rem 1.1rem', backdropFilter: 'blur(10px)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', color: 'rgba(212,175,55,0.8)' }}>{stat.icon}</div>
+                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.3rem', fontWeight: 700, color: '#FFF', margin: '0 0 2px', lineHeight: 1 }}>{stat.value}</p>
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: 0 }}>{stat.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* tabs */}
+          <div style={{ display: 'flex', gap: 0, overflowX: 'auto', scrollbarWidth: 'none' }}>
+            {tabs.map(tab => (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.85rem 1.25rem', background: 'none', border: 'none', borderBottom: `2px solid ${activeTab === tab.id ? '#D4AF37' : 'transparent'}`, color: activeTab === tab.id ? '#D4AF37' : 'rgba(255,255,255,0.45)', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                {tab.icon} {tab.label}
+                {tab.count !== undefined && tab.count > 0 && (
+                  <span style={{ background: activeTab === tab.id ? '#D4AF37' : 'rgba(255,255,255,0.15)', color: activeTab === tab.id ? '#1A1A2E' : '#FFF', borderRadius: '100px', padding: '1px 7px', fontSize: '0.58rem', fontWeight: 700 }}>{tab.count}</span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem clamp(1.5rem,6vw,5rem)' }}>
+      {/* ── TAB CONTENT ─────────────────────────────────────────────────────── */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem clamp(1.25rem,6vw,5rem)' }}>
 
-        {/* ── ORDERS TAB ── */}
+        {/* ── ORDERS ── */}
         {activeTab === 'orders' && (
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.8rem', fontWeight: 600, color: '#1A1A2E', margin: 0 }}>My Orders</h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: 'clamp(1.5rem,3vw,1.8rem)', fontWeight: 600, color: '#1A1A2E', margin: 0 }}>My Orders</h2>
               <button onClick={refetchOrders}
                 style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8A4FB1', background: '#F3E8FF', border: 'none', borderRadius: '8px', padding: '0.5rem 1rem', cursor: 'pointer' }}>
                 ↻ Refresh
               </button>
             </div>
+
             {ordersLoading ? (
-              <p style={{ fontFamily: '"Jost", sans-serif', color: 'rgba(26,26,46,0.4)' }}>Loading orders...</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {[1,2,3].map(i => (
+                  <div key={i} style={{ background: '#FFF', borderRadius: '12px', height: '80px', border: '1px solid rgba(138,79,177,0.08)', animation: 'pulse 1.5s infinite' }} />
+                ))}
+              </div>
             ) : orders.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '4rem', background: '#FFF', borderRadius: '12px', border: '1px solid rgba(138,79,177,0.1)' }}>
-                <FiPackage size={48} color="#E8D5F5" style={{ marginBottom: '1rem' }} />
-                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.3rem', color: '#8A4FB1' }}>No orders yet</p>
-                <Link to="/shop" style={{ display: 'inline-block', marginTop: '1rem', fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', textDecoration: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px' }}>Start Shopping</Link>
+              <div style={{ textAlign: 'center', padding: 'clamp(2rem,6vw,4rem)', background: '#FFF', borderRadius: '16px', border: '1px solid rgba(138,79,177,0.1)' }}>
+                <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#F3E8FF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                  <FiPackage size={32} color="#8A4FB1" />
+                </div>
+                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.3rem', color: '#8A4FB1', margin: '0 0 0.5rem' }}>No orders yet</p>
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', color: 'rgba(26,26,46,0.4)', margin: '0 0 1.5rem' }}>Your order history will appear here once you make a purchase.</p>
+                <Link to="/shop" style={{ display: 'inline-block', fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', textDecoration: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px' }}>Start Shopping</Link>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
                 {orders.map(order => {
                   const sc = STATUS_COLORS[order.status] || { bg: '#F3E8FF', color: '#5B21B6' }
                   return (
-                    <div key={order.id} style={{ background: '#FFF', borderRadius: '12px', padding: '1.5rem', border: '1px solid rgba(138,79,177,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.82rem', fontWeight: 700, color: '#1A1A2E', margin: 0 }}>{order.order_number}</p>
-                          <span style={{ background: sc.bg, color: sc.color, fontFamily: '"Jost", sans-serif', fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: '100px' }}>{order.status_display}</span>
+                    <div key={order.id} style={{ background: '#FFF', borderRadius: '14px', padding: 'clamp(1rem,3vw,1.5rem)', border: '1px solid rgba(138,79,177,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', transition: 'box-shadow 0.2s', cursor: 'default' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(138,79,177,0.1)' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: 0 }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: sc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <FiPackage size={18} color={sc.color} />
                         </div>
-                        <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', color: 'rgba(26,26,46,0.45)', margin: 0 }}>
-                          {new Date(order.created_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'long', year: 'numeric' })} · {order.items.length} item{order.items.length !== 1 ? 's' : ''}
-                        </p>
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                            <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.82rem', fontWeight: 700, color: '#1A1A2E', margin: 0 }}>{order.order_number}</p>
+                            <span style={{ background: sc.bg, color: sc.color, fontFamily: '"Jost", sans-serif', fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: '100px' }}>{order.status_display}</span>
+                          </div>
+                          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', color: 'rgba(26,26,46,0.45)', margin: 0 }}>
+                            {new Date(order.created_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'long', year: 'numeric' })} · {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                          </p>
+                        </div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.4rem', fontWeight: 700, color: '#8A4FB1', margin: 0 }}>{formatPrice(order.total)}</p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.35rem', fontWeight: 700, color: '#8A4FB1', margin: 0 }}>{formatPrice(order.total)}</p>
                         <FiChevronRight size={16} color="#8A4FB1" />
                       </div>
                     </div>
@@ -128,25 +187,28 @@ export default function AccountPage() {
           </div>
         )}
 
-        {/* ── WISHLIST TAB ── */}
+        {/* ── WISHLIST ── */}
         {activeTab === 'wishlist' && (
           <div>
-            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.8rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '1.5rem' }}>My Wishlist</h2>
+            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: 'clamp(1.5rem,3vw,1.8rem)', fontWeight: 600, color: '#1A1A2E', marginBottom: '1.5rem' }}>My Wishlist</h2>
             {wishlistItems.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '4rem', background: '#FFF', borderRadius: '12px', border: '1px solid rgba(138,79,177,0.1)' }}>
-                <FiHeart size={48} color="#E8D5F5" style={{ marginBottom: '1rem' }} />
-                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.3rem', color: '#8A4FB1' }}>Your wishlist is empty</p>
-                <Link to="/shop" style={{ display: 'inline-block', marginTop: '1rem', fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', textDecoration: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px' }}>Explore Products</Link>
+              <div style={{ textAlign: 'center', padding: 'clamp(2rem,6vw,4rem)', background: '#FFF', borderRadius: '16px', border: '1px solid rgba(138,79,177,0.1)' }}>
+                <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#F3E8FF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                  <FiHeart size={32} color="#8A4FB1" />
+                </div>
+                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.3rem', color: '#8A4FB1', margin: '0 0 0.5rem' }}>Your wishlist is empty</p>
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', color: 'rgba(26,26,46,0.4)', margin: '0 0 1.5rem' }}>Save items you love and find them here.</p>
+                <Link to="/shop" style={{ display: 'inline-block', fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', textDecoration: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px' }}>Explore Products</Link>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px,1fr))', gap: '1.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,200px), 1fr))', gap: '1.25rem' }}>
                 {wishlistItems.map(item => (
                   <Link key={item.id} to={`/product/${item.product.slug}`} style={{ textDecoration: 'none' }}>
-                    <div style={{ background: '#FFF', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(138,79,177,0.1)', transition: 'all 0.25s' }}
-                      onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor='#8A4FB1'; el.style.boxShadow='0 6px 24px rgba(138,79,177,0.1)' }}
-                      onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor='rgba(138,79,177,0.1)'; el.style.boxShadow='none' }}>
+                    <div style={{ background: '#FFF', borderRadius: '14px', overflow: 'hidden', border: '1px solid rgba(138,79,177,0.1)', transition: 'all 0.25s' }}
+                      onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor='#8A4FB1'; el.style.boxShadow='0 6px 24px rgba(138,79,177,0.1)'; el.style.transform='translateY(-2px)' }}
+                      onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor='rgba(138,79,177,0.1)'; el.style.boxShadow='none'; el.style.transform='none' }}>
                       <div style={{ height: '180px', background: '#F0E8FA', overflow: 'hidden' }}>
-                        {item.product.primary_image?.image && <img src={item.product.primary_image.image} alt={item.product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                        {item.product.primary_image?.image && <img src={item.product.primary_image.image} alt={item.product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }} />}
                       </div>
                       <div style={{ padding: '0.9rem' }}>
                         <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '4px', lineHeight: 1.2 }}>{item.product.name}</p>
@@ -160,43 +222,118 @@ export default function AccountPage() {
           </div>
         )}
 
-        {/* ── PROFILE TAB ── */}
+        {/* ── PROFILE ── */}
         {activeTab === 'profile' && (
-          <div style={{ maxWidth: '540px' }}>
-            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.8rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '1.5rem' }}>Profile Details</h2>
-            <div style={{ background: '#FFF', borderRadius: '12px', padding: '2rem', border: '1px solid rgba(138,79,177,0.1)' }}>
-              {[
-                { label: 'First Name',  value: user.first_name },
-                { label: 'Last Name',   value: user.last_name || '—' },
-                { label: 'Email',       value: user.email },
-                { label: 'Phone',       value: user.phone || '—' },
-                { label: 'Member Since',value: new Date(user.date_joined).toLocaleDateString('en-NG', { month: 'long', year: 'numeric' }) },
-              ].map(row => (
-                <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.85rem 0', borderBottom: '1px solid rgba(138,79,177,0.06)' }}>
-                  <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.4)' }}>{row.label}</span>
-                  <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.82rem', color: '#1A1A2E', fontWeight: 500 }}>{row.value}</span>
-                </div>
-              ))}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: 'clamp(1.5rem,3vw,1.8rem)', fontWeight: 600, color: '#1A1A2E', margin: 0 }}>Profile Details</h2>
               <Link to="/account/edit"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '1.5rem', fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', textDecoration: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px' }}>
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', textDecoration: 'none', padding: '0.65rem 1.25rem', borderRadius: '8px', transition: 'background 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#5B21B6' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#8A4FB1' }}>
                 <FiEdit2 size={12}/> Edit Profile
               </Link>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: '1.25rem' }}>
+
+              {/* Avatar card */}
+              <div style={{ background: '#FFF', borderRadius: '16px', border: '1px solid rgba(138,79,177,0.1)', overflow: 'hidden' }}>
+                <div style={{ background: 'linear-gradient(135deg, #3D1A6E, #5B21B6)', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                  <div style={{ width: '96px', height: '96px', borderRadius: '50%', background: 'linear-gradient(135deg, #8A4FB1, #D4AF37)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '3px solid rgba(212,175,55,0.5)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
+                    {user.avatar
+                      ? <img src={getCloudinaryUrl(user.avatar, 200)} alt={user.first_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2.2rem', fontWeight: 700, color: '#FFF' }}>{(user.first_name?.[0] || '') + (user.last_name?.[0] || '')}</span>
+                    }
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.4rem', fontWeight: 700, color: '#FFF', margin: '0 0 4px' }}>{user.full_name}</p>
+                    <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', margin: 0 }}>Soft Lifee Member</p>
+                  </div>
+                </div>
+                <div style={{ padding: '1.25rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
+                    {[
+                      { label: 'Orders',   value: orders.length },
+                      { label: 'Wishlist', value: wishlistItems.length },
+                      { label: 'Spent',    value: orders.length > 0 ? formatPrice(totalSpend) : '₦0' },
+                    ].map(stat => (
+                      <div key={stat.label}>
+                        <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.3rem', fontWeight: 700, color: '#8A4FB1', margin: '0 0 2px' }}>{stat.value}</p>
+                        <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.4)', margin: 0 }}>{stat.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Info card */}
+              <div style={{ background: '#FFF', borderRadius: '16px', padding: '1.75rem', border: '1px solid rgba(138,79,177,0.1)' }}>
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.4)', margin: '0 0 1.25rem' }}>Personal Information</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                  {[
+                    { icon: <FiUser size={14}/>,     label: 'Full Name',    value: user.full_name },
+                    { icon: <FiMail size={14}/>,     label: 'Email',        value: user.email },
+                    { icon: <FiPhone size={14}/>,    label: 'Phone',        value: user.phone || 'Not provided' },
+                    { icon: <FiCalendar size={14}/>, label: 'Member Since', value: new Date(user.date_joined).toLocaleDateString('en-NG', { day: 'numeric', month: 'long', year: 'numeric' }) },
+                    { icon: <FiShield size={14}/>,   label: 'Referral Code',value: user.referral_code },
+                  ].map((row, i, arr) => (
+                    <div key={row.label} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.875rem', padding: '0.9rem 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(138,79,177,0.07)' : 'none' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#F3E8FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8A4FB1', flexShrink: 0, marginTop: '1px' }}>
+                        {row.icon}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.4)', margin: '0 0 3px' }}>{row.label}</p>
+                        <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', fontWeight: 500, color: '#1A1A2E', margin: 0, wordBreak: 'break-all' }}>{row.value}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Referral card */}
+              {user.referral_code && (
+                <div style={{ background: 'linear-gradient(135deg, #F9F0FF, #FDF6FF)', borderRadius: '16px', padding: '1.75rem', border: '1px solid rgba(138,79,177,0.15)', gridColumn: 'span 1' }}>
+                  <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#8A4FB1', margin: '0 0 0.75rem' }}>Your Referral Code</p>
+                  <p style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '0.9rem', color: 'rgba(26,26,46,0.5)', margin: '0 0 1rem', lineHeight: 1.6 }}>Share this code with friends and earn rewards when they shop.</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1, background: '#FFF', border: '1px dashed rgba(138,79,177,0.3)', borderRadius: '10px', padding: '0.75rem 1rem', fontFamily: '"Jost", sans-serif', fontSize: '1.1rem', fontWeight: 700, color: '#8A4FB1', letterSpacing: '0.12em', minWidth: '120px', textAlign: 'center' }}>
+                      {user.referral_code}
+                    </div>
+                    <button onClick={() => { navigator.clipboard.writeText(user.referral_code); }}
+                      style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', border: 'none', borderRadius: '10px', padding: '0.75rem 1.25rem', cursor: 'pointer', flexShrink: 0 }}>
+                      Copy
+                    </button>
+                  </div>
+                  <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', color: 'rgba(26,26,46,0.4)', margin: '0.75rem 0 0' }}>You've referred <strong style={{ color: '#8A4FB1' }}>{user.referral_count}</strong> {user.referral_count === 1 ? 'person' : 'people'}</p>
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* ── ADDRESSES TAB ── */}
+        {/* ── ADDRESSES ── */}
         {activeTab === 'addresses' && (
           <div style={{ maxWidth: '640px' }}>
-            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.8rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '1.5rem' }}>Saved Addresses</h2>
-            <div style={{ background: '#FFF', borderRadius: '12px', padding: '2rem', border: '1px solid rgba(138,79,177,0.1)', textAlign: 'center' }}>
-              <FiMapPin size={40} color="#E8D5F5" style={{ marginBottom: '1rem' }}/>
-              <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', color: 'rgba(26,26,46,0.45)' }}>Address management coming soon</p>
-              <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', color: 'rgba(26,26,46,0.35)', marginTop: '4px' }}>You can save delivery addresses here for faster checkout</p>
+            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: 'clamp(1.5rem,3vw,1.8rem)', fontWeight: 600, color: '#1A1A2E', marginBottom: '1.5rem' }}>Saved Addresses</h2>
+            <div style={{ background: '#FFF', borderRadius: '16px', padding: '2.5rem', border: '1px solid rgba(138,79,177,0.1)', textAlign: 'center' }}>
+              <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#F3E8FF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                <FiMapPin size={32} color="#8A4FB1" />
+              </div>
+              <p style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.2rem', color: '#8A4FB1', margin: '0 0 0.5rem' }}>Address management coming soon</p>
+              <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', color: 'rgba(26,26,46,0.4)', margin: 0 }}>Save delivery addresses here for faster checkout</p>
             </div>
           </div>
         )}
       </div>
+
+      <style>{`
+        @media (max-width: 640px) {
+          div[style*="gridTemplateColumns: repeat(auto-fit, minmax(120px"] {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }
