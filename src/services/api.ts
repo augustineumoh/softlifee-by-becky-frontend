@@ -88,6 +88,7 @@ async function refreshAccessToken(): Promise<boolean> {
     if (!res.ok) return false
     const data = await res.json()
     localStorage.setItem('access_token', data.access)
+    if (data.refresh) localStorage.setItem('refresh_token', data.refresh)
     return true
   } catch {
     return false
@@ -250,7 +251,7 @@ export const ordersAPI = {
     request<CreateOrderResponse>('/orders/', {
       method: 'POST',
       body:   JSON.stringify(data),
-    }),
+    }, true),
 
   getMyOrders: () =>
     request<Order[]>('/orders/my-orders/', {}, true),

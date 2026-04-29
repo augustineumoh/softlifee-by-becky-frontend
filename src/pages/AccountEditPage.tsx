@@ -53,7 +53,7 @@ export default function AccountEditPage() {
       setSuccess(true)
       setTimeout(() => navigate('/account'), 1500)
     } catch (err: any) {
-      setError(err?.detail || 'Failed to save changes. Please try again.')
+      setError(err?.detail || err?.error || err?.message || 'Failed to save changes. Please try again.')
     } finally {
       setSaving(false)
     }
