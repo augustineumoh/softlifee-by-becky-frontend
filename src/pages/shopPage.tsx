@@ -1,11 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { FiHeart, FiShoppingBag, FiSearch, FiX, FiSliders, FiChevronDown } from 'react-icons/fi'
-import { useProducts, useCategories } from '../hooks/useProducts'
+import { useProducts, useCategories, useSearch } from '../hooks/useProducts'
 import { useWishlist } from '../hooks/useWishlist'
 import { useCart } from '../store/cartStore'
 import { getCloudinaryUrl } from '../services/api'
 import type { Product, ProductFilters } from '../services/api'
+import kitchenImg    from '../assets/kitchen rack.jpg'
+import skincareImg   from '../assets/skincare.jpg'
+import jewelleryImg  from '../assets/jewelry.jpg'
+import booptapeImg   from '../assets/boobtape.jpg'
+import hero1Img      from '../assets/hero1.jpeg'
 
 const formatPrice = (n: string | number) => '₦' + Number(n).toLocaleString('en-NG')
 

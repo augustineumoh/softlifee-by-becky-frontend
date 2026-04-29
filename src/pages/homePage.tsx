@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../store/cartStore'
+import { reviewsAPI, type FeaturedReview } from '../services/api'
 import HeroSection from '../components/home/heroSection'
 import totebag from '../assets/tote bag.jpg'
 import diffuser from '../assets/diffuser.jpg'
@@ -76,7 +77,7 @@ const categories = [
   { label: 'Home Essentials',    sub: 'Kitchen · Bathroom · Lighting', to: '/shop/home-essentials', image: relaxationchair },
   { label: 'Skincare',           sub: 'Face · Body · Travel Kits',     to: '/shop/skincare',        image: travelkit },
   { label: 'Accessories',        sub: 'Bags · Jewelry · Drinkware',    to: '/shop/accessories',     image: stanleycup },
-  { label: "Women's Essentials", sub: 'Personal Care & More',          to: '/shop/womens-essentials', image: booptape },
+  { label: 'Personal Essentials', sub: 'Personal Care & More',          to: '/shop/womens-essentials', image: booptape },
 ]
 
 const giftIdeas = [
@@ -87,13 +88,31 @@ const giftIdeas = [
   { label: 'For Kitchen',   emoji: '🍳', desc: 'Modern kitchen essentials',                to: '/giftideas#forkitchen', image: storagebasket },
 ]
 
-const testimonials = [
+const STATIC_TESTIMONIALS = [
   { name: 'Adaeze O.',   location: 'Lagos',         rating: 5, text: 'Honestly the diffuser changed my entire living room vibe. The quality is unreal for the price. Soft Lifee never disappoints!' },
   { name: 'Chioma B.',   location: 'Abuja',         rating: 5, text: "I ordered the tote bag and the stick mask together — packaging was so beautiful I almost didn't want to open it. Will definitely be back!" },
   { name: 'Fatima K.',   location: 'Port Harcourt', rating: 5, text: 'The bathroom organizer is exactly what I needed. Looks expensive and does the job perfectly. Fast delivery too!' },
   { name: 'Ngozi A.',    location: 'Enugu',         rating: 5, text: "My Smart Watch set arrived in 2 days and it's stunning. Customer service was so warm and responsive. 10/10 experience." },
   { name: 'Blessing I.', location: 'Lagos',         rating: 5, text: "Been buying from Soft Lifee for 3 months now. Every single product has been worth it. The sand drop is my current obsession!" },
 ]
+
+function useTestimonials() {
+  const [list, setList] = useState(STATIC_TESTIMONIALS)
+  useEffect(() => {
+    reviewsAPI.getFeatured()
+      .then((data: FeaturedReview[]) => {
+        if (!data || data.length === 0) return
+        setList(data.map(r => ({
+          name:     r.reviewer_name,
+          location: r.city || 'Nigeria',
+          rating:   r.rating,
+          text:     r.body,
+        })))
+      })
+      .catch(() => {}) // keep static fallback on error
+  }, [])
+  return list
+}
 
 const perks = [
   { icon: '🚚', title: 'Free Delivery',   desc: 'On all orders above ₦50,000 nationwide' },
@@ -186,21 +205,24 @@ export default function HomePage() {
   const filters = ['All', 'Home Essentials', 'Skincare', 'Accessories']
   const filtered = activeFilter === 'All' ? bestSellers : bestSellers.filter(p => p.category === activeFilter)
   const VISIBLE_CATS = 3
-  const autoRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const autoRef     = useRef<ReturnType<typeof setInterval> | null>(null)
+  const touchStart  = useRef<number | null>(null)
 
-  const slideTestimonial = (dir: 'next' | 'prev') => {
+  const testimonials = useTestimonials()
+
+  const slideTestimonial = useCallback((dir: 'next' | 'prev') => {
     if (isSliding) return
     setIsSliding(true)
     setTestimonialsIdx(i =>
       dir === 'next' ? (i + 1) % testimonials.length : (i - 1 + testimonials.length) % testimonials.length
     )
     setTimeout(() => setIsSliding(false), 500)
-  }
+  }, [isSliding, testimonials.length])
 
   useEffect(() => {
     autoRef.current = setInterval(() => slideTestimonial('next'), 5000)
     return () => { if (autoRef.current) clearInterval(autoRef.current) }
-  }, [isSliding])
+  }, [slideTestimonial])
 
   return (
     <div style={{ overflowX: 'hidden' }}>
@@ -321,7 +343,7 @@ export default function HomePage() {
               "Soft living isn't a luxury — it's a choice."
             </h2>
             <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.9rem', fontWeight: 300, color: '#5B21B6', lineHeight: 1.85, marginBottom: '2.5rem' }}>
-              Soft Lifee by Becky was born from a simple belief: every woman deserves to live beautifully — in her home, on her skin, and in how she moves through the world. Every product is handpicked with intention, quality, and real life in mind.
+              Soft Lifee by Becky was born from a simple belief: everyone deserves to live beautifully — in their home, on their skin, and in how they move through the world. Every product is handpicked with intention, quality, and real life in mind.
             </p>
             <Link to="/about" style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', textDecoration: 'none', padding: '1rem 2rem',  alignSelf: 'flex-start', transition: 'background 0.3s', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               onMouseEnter={e => { e.currentTarget.style.background = '#5B21B6' }}
@@ -347,7 +369,16 @@ export default function HomePage() {
         </Reveal>
 
         {/* ── SLIDING CARD ── */}
-        <div style={{ maxWidth: '780px', margin: '0 auto', position: 'relative' }}>
+        <div style={{ maxWidth: '780px', margin: '0 auto', position: 'relative' }}
+          onTouchStart={e => { touchStart.current = e.touches[0].clientX }}
+          onTouchEnd={e => {
+            if (touchStart.current === null) return
+            const delta = e.changedTouches[0].clientX - touchStart.current
+            touchStart.current = null
+            if (Math.abs(delta) < 40) return
+            if (autoRef.current) clearInterval(autoRef.current)
+            slideTestimonial(delta < 0 ? 'next' : 'prev')
+          }}>
           <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: 'clamp(2rem,5vw,3.5rem)', boxShadow: '0 8px 48px rgba(138,79,177,0.12)', minHeight: '200px', transition: 'opacity 0.4s ease', opacity: isSliding ? 0 : 1, textAlign: 'center' }}>
             <StarRating count={testimonials[testimonialsIdx].rating} />
             <blockquote style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.2rem,2.5vw,1.7rem)', fontWeight: 400, fontStyle: 'italic', color: '#1A1A2E', lineHeight: 1.6, margin: '0 0 1.5rem 0' }}>
@@ -420,7 +451,11 @@ export default function HomePage() {
       </section> */}
 
       <style>{`
-        @keyframes sl-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes sl-marquee  { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes sl-fadeUp   { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes sl-scaleIn  { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }
+        @keyframes sl-slideInL { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes sl-slideInR { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
 
         @media (max-width: 640px) {
           /* Mobile add button */
@@ -437,6 +472,9 @@ export default function HomePage() {
           /* Section padding: tighten vertical rhythm */
           .hp-section-md  { padding-top: 3rem !important; padding-bottom: 3rem !important; }
           .hp-section-lg  { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+
+          /* Perks bar: 2-col grid */
+          div[style*="repeat(auto-fit,minmax(180px"] { grid-template-columns: repeat(2,1fr) !important; }
 
           /* Category slider: scrollable snap on mobile */
           .hp-cat-arrows { display: none !important; }

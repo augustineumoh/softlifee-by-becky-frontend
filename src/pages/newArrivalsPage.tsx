@@ -80,7 +80,7 @@ const allProducts = [
   { id: 15, name: 'Storage Basket',        category: 'Home Essentials', subcategory: 'kitchen',       price: 7500,  badge: 'New',         image: storagebasket,     slug: 'storage-basket',         addedDate: '2026-04-12' },
   { id: 16, name: 'Moonlight Lamp',        category: 'Home Essentials', subcategory: 'lighting',      price: 14500, badge: 'New',         image: rotatinglight,     slug: 'moonlight-lamp',         addedDate: '2026-04-25' },
   { id: 17, name: 'Relaxation Chair',      category: 'Home Essentials', subcategory: 'personal-care', price: 85000, badge: 'Premium',     image: relaxationchair,   slug: 'relaxation-chair',       addedDate: '2025-04-01' },
-  { id: 18, name: 'Boob Tape',             category: "Women's Essentials", subcategory: 'personal-care', price: 3500, badge: 'Best Seller', image: booptape,       slug: 'boob-tape',              addedDate: '2025-04-20' },
+  { id: 18, name: 'Boob Tape',             category: "Personal Essentials", subcategory: 'personal-care', price: 3500, badge: 'Best Seller', image: booptape,       slug: 'boob-tape',              addedDate: '2025-04-20' },
   { id: 19, name: 'Over-The-Toilet Organizer Rack', category: 'Home Essentials', subcategory: 'bathroom', price: 15000, badge: 'New',   image: toiletrack,        slug: 'over-the-toilet-organizer-rack', addedDate: '2026-04-14' },
   { id: 20, name: 'Phone Suction Cup',     category: 'Accessories',     subcategory: 'smart-gadgets', price: 1000,  badge: 'New',         image: phonesuction,      slug: 'phone-suction-cup',      addedDate: '2026-04-14' },
   { id: 21, name: 'RGB Phone LED Light',   category: 'Accessories',     subcategory: 'smart-gadgets', price: 8000,  badge: 'New',         image: rgbled,            slug: 'rgb-phone-led-light',    addedDate: '2026-04-15' },
@@ -102,7 +102,7 @@ const allProducts = [
   { id: 37, name: 'Decorative Wall Hooks', category: 'Home Essentials', subcategory: 'decor',        price: 1500,  badge: 'New',         image: wallhook,          slug: 'decorative-wall-hooks',  addedDate: '2026-04-23' },
   { id: 38, name: 'Fancy Barbie Pen',      category: 'Accessories',     subcategory: 'accessories',  price: 2000,  badge: 'New',         image: barbiepen,         slug: 'fancy-barbie-pen',       addedDate: '2026-04-25' },
   { id: 39, name: 'Multifunctional Wall Mounted Trash Can', category: 'Home Essentials', subcategory: 'kitchen', price: 4500, badge: 'New', image: trashcan, slug: 'multifunctional-wall-mounted-trash-can', addedDate: '2026-04-24' },
-  { id: 40, name: 'Transparent Boobs Lifter', category: "Women's Essentials", subcategory: 'personal-care', price: 4500, badge: 'New',  image: booblifter,        slug: 'transparent-boobs-lifter', addedDate: '2026-04-24' },
+  { id: 40, name: 'Transparent Boobs Lifter', category: "Personal Essentials", subcategory: 'personal-care', price: 4500, badge: 'New',  image: booblifter,        slug: 'transparent-boobs-lifter', addedDate: '2026-04-24' },
   { id: 41, name: 'Smart Watch (Series 8)', category: 'Accessories',    subcategory: 'jewelry',      price: 25000, badge: 'New',         image: series8,           slug: 'smart-watch-series-8',   addedDate: '2026-04-24' },
   { id: 42, name: 'Compressed Facial Towel', category: 'Skincare',      subcategory: 'face',         price: 200,   badge: 'New',         image: facetowel,         slug: 'compressed-facial-towel', addedDate: '2026-04-20' },
   { id: 43, name: 'SADOER Ampoules Facial Mask', category: 'Skincare',  subcategory: 'face',         price: 800,   badge: 'New',         image: facemask,          slug: 'sadoer-ampoules-facial-mask', addedDate: '2026-04-25' },
@@ -150,7 +150,7 @@ function daysLeft(addedDate: string): number {
 
 const badgeColors: Record<string, string> = {
   'Home Essentials': '#5B21B6', 'Skincare': '#8A4FB1',
-  'Accessories': '#1A1A2E', "Women's Essentials": '#C4A8D4',
+  'Accessories': '#1A1A2E', "Personal Essentials": '#C4A8D4', "Personal Essentials": '#C4A8D4',
 }
 
 // ── Countdown timer ───────────────────────────────────────────────────────────
@@ -348,7 +348,7 @@ function SpotlightCard({ product, rank, left }: { product: typeof allProducts[0]
 export default function NewArrivalsPage() {
   const { d, h, m, s } = useCountdown()
   const [activeFilter, setActiveFilter] = useState('All')
-  const filters = ['All', 'Home Essentials', 'Skincare', 'Accessories', "Women's Essentials"]
+  const filters = ['All', 'Home Essentials', 'Skincare', 'Accessories', "Personal Essentials"]
 
   const filtered = activeFilter === 'All'
     ? newArrivals

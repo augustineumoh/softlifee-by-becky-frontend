@@ -31,16 +31,16 @@ function Reveal({ children, delay = 0, from = 'bottom' }: { children: React.Reac
 
 const values = [
   { icon: '✦', title: 'Intentional Curation', desc: 'Every product is handpicked — not just for aesthetics, but for the real value it adds to your everyday life.' },
-  { icon: '✦', title: 'Accessible Luxury', desc: "We believe luxury shouldn't be a privilege. Our products bring beauty and quality within reach for every woman." },
+  { icon: '✦', title: 'Accessible Luxury', desc: "We believe luxury shouldn't be a privilege. Our products bring beauty and quality within reach for everyone." },
   { icon: '✦', title: 'Authenticity First', desc: 'No compromises. Every item in our collection is 100% authentic, vetted for quality before it ever reaches you.' },
-  { icon: '✦', title: 'Community Over Commerce', desc: "We're building more than a store — we're creating a community of women who choose to live beautifully." },
+  { icon: '✦', title: 'Community Over Commerce', desc: "We're building more than a store — we're creating a community of people who choose to live beautifully." },
 ]
 
 const milestones = [
-  { year: '2022', title: 'The Beginning', desc: 'Soft Lifee was born from a simple idea — every woman deserves to live beautifully, no matter her budget.' },
-  { year: '2023', title: 'Growing the Collection', desc: 'Expanded from skincare into home essentials and accessories, serving hundreds of women across Nigeria.' },
-  { year: '2024', title: 'Going Digital', desc: 'Launched our online store to reach women beyond Lagos — now delivering nationwide across Nigeria.' },
-  { year: '2025', title: 'Luxury Goods & Lifestyle', desc: 'Rebranded to reflect our growth — curating luxury goods and lifestyle products for the modern Nigerian woman.' },
+  { year: '2022', title: 'The Beginning', desc: 'Soft Lifee was born from a simple idea — everyone deserves to live beautifully, no matter their budget.' },
+  { year: '2023', title: 'Growing the Collection', desc: 'Expanded from skincare into home essentials and accessories, serving thousands of customers across Nigeria.' },
+  { year: '2024', title: 'Going Digital', desc: 'Launched our online store — now delivering nationwide to all 36 states across Nigeria.' },
+  { year: '2025', title: 'Luxury Goods & Lifestyle', desc: 'Rebranded to reflect our growth — curating luxury goods and lifestyle products for the modern Nigerian lifestyle.' },
 ]
 
 const stats = [
@@ -77,7 +77,7 @@ export default function AboutPage() {
             <Reveal>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.25rem' }}>
                 <div style={{ width: '24px', height: '1px', background: '#8A4FB1' }} />
-                <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#8A4FB1' }}>Est. 2022 · Uyo, Nigeria</span>
+                <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#8A4FB1' }}>Est. 2022 · Uyo, Akwa Ibom</span>
               </div>
             </Reveal>
 
@@ -89,7 +89,7 @@ export default function AboutPage() {
 
             <Reveal delay={0.2}>
               <p style={{ fontFamily: '"Jost", sans-serif', fontSize: 'clamp(0.82rem,2vw,0.9rem)', fontWeight: 300, color: '#5B21B6', lineHeight: 1.85, marginBottom: '1.75rem', maxWidth: '440px' }}>
-                Soft Lifee by Becky is a curated lifestyle brand bringing beauty, quality and intentionality into the everyday lives of women across Nigeria.
+                Soft Lifee by Becky is a curated lifestyle brand bringing beauty, quality and intentionality into everyday lives across Nigeria.
               </p>
             </Reveal>
 

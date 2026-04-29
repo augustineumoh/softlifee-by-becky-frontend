@@ -7,7 +7,7 @@ const quickLinks = [
   { label: 'Home Essentials',     to: '/shop/home-essentials' },
   { label: 'Skincare',            to: '/shop/skincare' },
   { label: 'Accessories',         to: '/shop/accessories' },
-  { label: "Women's Essentials",  to: '/shop/womens-essentials' },
+  { label: 'Personal Essentials',  to: '/shop/womens-essentials' },
   { label: 'Gift Ideas',          to: '/giftideas' },
 ]
 

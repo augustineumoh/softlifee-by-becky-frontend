@@ -32,7 +32,7 @@ const slides = [
     eyebrow: 'Accessories & Style',
     headline: 'Carry your',
     headlineAccent: 'story.',
-    sub: 'Bags, jewelry & travel kits for the woman on the move.',
+    sub: 'Bags, jewelry & travel kits for every journey.',
     cta: '/shop/accessories',
     align: 'right',
   },

@@ -271,6 +271,9 @@ export const ordersAPI = {
 
 // ── Reviews API ───────────────────────────────────────────────────────────────
 export const reviewsAPI = {
+  getFeatured: () =>
+    request<FeaturedReview[]>('/reviews/featured/'),
+
   getForProduct: (slug: string) =>
     request<Review[]>(`/reviews/${slug}/`),
 
@@ -279,6 +282,7 @@ export const reviewsAPI = {
     title?:         string
     body:           string
     reviewer_name?: string
+    city?:          string
   }) => request(`/reviews/${slug}/submit/`, {
     method: 'POST',
     body:   JSON.stringify(data),
@@ -512,11 +516,22 @@ export interface DiscountValidation {
 export interface Review {
   id:                   number
   reviewer_name:        string
+  city:                 string
   rating:               number
   title:                string
   body:                 string
   is_verified_purchase: boolean
   created_at:           string
+}
+
+export interface FeaturedReview {
+  id:           number
+  reviewer_name:string
+  city:         string
+  rating:       number
+  body:         string
+  product_name: string
+  created_at:   string
 }
 
 // ── Cart types ────────────────────────────────────────────────────────────────
