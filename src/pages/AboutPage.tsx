@@ -186,13 +186,13 @@ export default function AboutPage() {
           <div style={{ background: '#FAF7FF', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 'clamp(2rem,6vw,5rem)' }}>
             <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#8A4FB1', marginBottom: '0.85rem' }}>Who We Are</p>
             <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.6rem,3vw,2.8rem)', fontWeight: 600, fontStyle: 'italic', color: '#1A1A2E', lineHeight: 1.2, margin: '0 0 1.25rem 0' }}>
-              "Soft living isn't a luxury — it's a choice every woman deserves."
+              "Soft living isn't a luxury — it's a choice every Person deserves."
             </h2>
             <p style={{ fontFamily: '"Jost", sans-serif', fontSize: 'clamp(0.82rem,2vw,0.88rem)', fontWeight: 300, color: '#5B21B6', lineHeight: 1.9, marginBottom: '1rem' }}>
               Soft Lifee by Becky started with one simple question: why should beautiful living be reserved for the few? We set out to change that — curating products that elevate the everyday, from your skincare shelf to your kitchen counter.
             </p>
             <p style={{ fontFamily: '"Jost", sans-serif', fontSize: 'clamp(0.82rem,2vw,0.88rem)', fontWeight: 300, color: '#5B21B6', lineHeight: 1.9, marginBottom: '1.75rem' }}>
-              Based in Uyo, Akwa Ibom, we deliver across Nigeria — bringing intentionally chosen home essentials, skincare, accessories and lifestyle products to women who refuse to settle for less.
+              Based in Uyo, Akwa Ibom, we deliver Nationwide — bringing intentionally chosen home essentials, skincare, accessories and lifestyle products to people who refuse to settle for less.
             </p>
             <Link to="/shop" style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', textDecoration: 'none', padding: '0.85rem 1.75rem', alignSelf: 'flex-start', borderRadius: '2px', transition: 'background 0.3s', display: 'flex', alignItems: 'center', gap: '0.5rem', minHeight: '44px' }}
               onMouseEnter={e => { e.currentTarget.style.background = '#5B21B6' }}

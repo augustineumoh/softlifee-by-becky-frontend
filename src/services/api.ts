@@ -484,7 +484,7 @@ export interface CreateOrderData {
   payment_method:   'card' | 'transfer' | 'ussd' | 'pod'
   discount_code?:   string
   items: Array<{
-    product_id:     number
+    product_slug:   string
     quantity:       number
     color_variant?: string
     size_variant?:  string
