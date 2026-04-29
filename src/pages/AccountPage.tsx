@@ -73,7 +73,8 @@ export default function AccountPage() {
               <div style={{ position: 'relative', flexShrink: 0 }}>
                 <div style={{ width: 'clamp(64px,10vw,80px)', height: 'clamp(64px,10vw,80px)', borderRadius: '50%', background: 'linear-gradient(135deg, #8A4FB1, #D4AF37)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '3px solid rgba(212,175,55,0.5)', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
                   {user.avatar
-                    ? <img src={getCloudinaryUrl(user.avatar, 200)} alt={user.first_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ? <img src={getCloudinaryUrl(user.avatar, 200)} alt={user.first_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}/>
                     : <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1.5rem,4vw,2rem)', fontWeight: 700, color: '#FFF' }}>{user.first_name?.[0]?.toUpperCase()}</span>
                   }
                 </div>
@@ -280,7 +281,8 @@ export default function AccountPage() {
                 <div style={{ background: 'linear-gradient(135deg, #3D1A6E, #5B21B6)', padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
                   <div style={{ width: '96px', height: '96px', borderRadius: '50%', background: 'linear-gradient(135deg, #8A4FB1, #D4AF37)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '3px solid rgba(212,175,55,0.5)', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
                     {user.avatar
-                      ? <img src={getCloudinaryUrl(user.avatar, 200)} alt={user.first_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ? <img src={getCloudinaryUrl(user.avatar, 200)} alt={user.first_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}/>
                       : <span style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '2.2rem', fontWeight: 700, color: '#FFF' }}>{(user.first_name?.[0] || '') + (user.last_name?.[0] || '')}</span>
                     }
                   </div>

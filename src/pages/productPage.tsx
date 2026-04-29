@@ -5,6 +5,7 @@ import {
   FiTruck, FiRefreshCw, FiShield, FiStar, FiInstagram,
   FiMinus, FiPlus, FiCheck, FiPackage, FiPlay, FiSend,
 } from 'react-icons/fi'
+import { FaWhatsapp } from 'react-icons/fa'
 import { useCart } from '../store/cartStore'
 import { useAuth } from '../store/authStore'
 import { useProduct } from '../hooks/useProducts'
