@@ -304,7 +304,7 @@ export default function Footer() {
         }
 
         /* Accordion — desktop: accordion controls hidden, links always shown */
-        .ft-accordion-btn  { display: none; }
+        .ft-accordion-btn  { display: none !important; }
         .ft-accordion-body { display: block !important; }
         .ft-section-title  { display: block; }
 

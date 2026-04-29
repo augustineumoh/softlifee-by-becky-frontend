@@ -43,7 +43,9 @@ export function useOrders() {
     setLoading(true)
     ordersAPI.getMyOrders()
       .then(data => {
-        setOrders(Array.isArray(data) ? data : [])
+        // Handle both plain array and DRF paginated { results: [] } shape
+        const arr = Array.isArray(data) ? data : ((data as any)?.results ?? [])
+        setOrders(arr)
       })
       .catch(() => {
         setOrders([])

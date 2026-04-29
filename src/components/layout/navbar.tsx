@@ -185,8 +185,8 @@ export default function Navbar() {
           /* Constrain logo by width so it can't overflow the flex row */
           .sl-nav-logo  {
             height: auto !important;
-            width: clamp(110px, 32vw, 180px) !important;
-            max-width: 32vw !important;
+            width: clamp(140px, 40vw, 210px) !important;
+            max-width: 40vw !important;
             object-fit: contain !important;
           }
         }
@@ -194,8 +194,8 @@ export default function Navbar() {
           .sl-nav-inner { padding: 0 1rem !important; }
           .sl-nav-icons { gap: 0.65rem !important; }
           .sl-nav-logo  {
-            width: clamp(90px, 28vw, 140px) !important;
-            max-width: 28vw !important;
+            width: clamp(120px, 36vw, 175px) !important;
+            max-width: 36vw !important;
           }
         }
       `}</style>

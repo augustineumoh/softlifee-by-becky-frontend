@@ -44,7 +44,11 @@ export default function AccountEditPage() {
     try {
       await authAPI.updateProfile(form)
       if (avatarFile) {
-        await authAPI.uploadAvatar(avatarFile)
+        // uploadAvatar now returns the full User — update store directly
+        const updatedUser = await authAPI.uploadAvatar(avatarFile)
+        if (updatedUser?.avatar) {
+          useAuth.setState(s => ({ ...s, user: { ...s.user!, ...updatedUser } }))
+        }
       }
       await loadUser()
       setSuccess(true)
