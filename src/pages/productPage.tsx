@@ -3,10 +3,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   FiHeart, FiShare2, FiShoppingBag, FiZap, FiChevronDown, FiChevronUp,
   FiTruck, FiRefreshCw, FiShield, FiStar, FiInstagram,
-  FiMinus, FiPlus, FiCheck, FiPackage, FiPlay
+  FiMinus, FiPlus, FiCheck, FiPackage, FiPlay, FiSend,
 } from 'react-icons/fi'
-import { FaWhatsapp } from 'react-icons/fa'
 import { useCart } from '../store/cartStore'
+import { useAuth } from '../store/authStore'
 import { useProduct } from '../hooks/useProducts'
 import { useWishlist } from '../hooks/useWishlist'
 import {
@@ -100,10 +100,33 @@ function ProductSkeleton() {
   )
 }
 
+function StarPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const [hover, setHover] = useState(0)
+  return (
+    <div style={{ display: 'flex', gap: '4px' }}>
+      {[1,2,3,4,5].map(i => (
+        <button key={i} type="button"
+          onMouseEnter={() => setHover(i)}
+          onMouseLeave={() => setHover(0)}
+          onClick={() => onChange(i)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', lineHeight: 0 }}>
+          <FiStar size={26} style={{
+            fill: i <= (hover || value) ? '#D4AF37' : 'none',
+            color: '#D4AF37',
+            opacity: i <= (hover || value) ? 1 : 0.35,
+            transition: 'all 0.15s',
+          }}/>
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export default function ProductDetailPage() {
   const { slug = '' }  = useParams<{ slug: string }>()
   const navigate        = useNavigate()
   const { addItem }     = useCart()
+  const { user }        = useAuth()
   const videoRef        = useRef<HTMLVideoElement>(null)
 
   const { product, loading, error } = useProduct(slug)
@@ -119,9 +142,30 @@ export default function ProductDetailPage() {
   const [reviews, setReviews]   = useState<Review[]>([])
   const [related, setRelated]   = useState<Product[]>([])
 
+  // ── Review form state ─────────────────────────────────────────────────────
+  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [reviewForm, setReviewForm] = useState({
+    rating: 0, reviewer_name: '', reviewer_email: '', city: '', title: '', body: '',
+  })
+  const [reviewSubmitting, setReviewSubmitting] = useState(false)
+  const [reviewSuccess,    setReviewSuccess]    = useState(false)
+  const [reviewError,      setReviewError]      = useState('')
+
   useEffect(() => {
     setActiveIdx(0); setQty(1); setAddedToCart(false); setActiveColor(0); setActiveSize(null)
+    setShowReviewForm(false); setReviewSuccess(false); setReviewError('')
+    setReviewForm({ rating: 0, reviewer_name: '', reviewer_email: '', city: '', title: '', body: '' })
   }, [slug])
+
+  useEffect(() => {
+    if (user) {
+      setReviewForm(f => ({
+        ...f,
+        reviewer_name:  f.reviewer_name  || `${user.first_name} ${user.last_name}`.trim(),
+        reviewer_email: f.reviewer_email || user.email || '',
+      }))
+    }
+  }, [user])
 
   useEffect(() => {
     if (!slug) return
@@ -130,6 +174,31 @@ export default function ProductDetailPage() {
       .then(data => setRelated((Array.isArray(data) ? data : []).slice(0, 4)))
       .catch(() => {})
   }, [slug])
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!reviewForm.rating) { setReviewError('Please select a star rating.'); return }
+    if (!reviewForm.body.trim()) { setReviewError('Please write your review.'); return }
+    if (!reviewForm.reviewer_name.trim()) { setReviewError('Please enter your name.'); return }
+    setReviewSubmitting(true)
+    setReviewError('')
+    try {
+      await reviewsAPI.submit(slug, {
+        rating:         reviewForm.rating,
+        title:          reviewForm.title || undefined,
+        body:           reviewForm.body,
+        reviewer_name:  reviewForm.reviewer_name,
+        reviewer_email: reviewForm.reviewer_email || undefined,
+        city:           reviewForm.city || undefined,
+      })
+      setReviewSuccess(true)
+      setShowReviewForm(false)
+    } catch (err: any) {
+      setReviewError(err?.detail || err?.error || Object.values(err || {})?.[0]?.[0] || 'Could not submit review. Please try again.')
+    } finally {
+      setReviewSubmitting(false)
+    }
+  }
 
   if (loading) return <ProductSkeleton/>
 
@@ -143,18 +212,20 @@ export default function ProductDetailPage() {
   }
 
   // ── Build gallery ────────────────────────────────────────────────────────────
-  const effectiveMedia: MediaItem[] = product.color_variants.length > 0
-    ? [
-        { type: 'image', src: getCloudinaryUrl(product.color_variants[activeColor].image, 800) },
-        ...product.images
-          .filter(img => img.image !== product.color_variants[activeColor].image)
-          .map(img => ({ type: 'image' as const, src: getCloudinaryUrl(img.image, 800) })),
-        ...product.videos.map(v => ({ type: 'video' as const, src: v.video_url, poster: v.poster ?? undefined })),
-      ]
-    : [
-        ...product.images.map(img => ({ type: 'image' as const, src: getCloudinaryUrl(img.image, 800) })),
-        ...product.videos.map(v => ({ type: 'video' as const, src: v.video_url, poster: v.poster ?? undefined })),
-      ]
+  const colorVariantImg = product.color_variants.length > 0
+    ? (product.color_variants[activeColor]?.image || null)
+    : null
+
+  const effectiveMedia: MediaItem[] = [
+    ...(colorVariantImg
+      ? [{ type: 'image' as const, src: getCloudinaryUrl(colorVariantImg, 800) }]
+      : []
+    ),
+    ...product.images
+      .filter(img => img.image && (!colorVariantImg || img.image !== colorVariantImg))
+      .map(img => ({ type: 'image' as const, src: getCloudinaryUrl(img.image, 800) })),
+    ...product.videos.map(v => ({ type: 'video' as const, src: v.video_url, poster: v.poster ?? undefined })),
+  ]
 
   // Fallback to primary_image if no images uploaded yet
   if (effectiveMedia.length === 0 && product.primary_image?.image) {
@@ -575,13 +646,85 @@ export default function ProductDetailPage() {
             <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', fontWeight: 300, color: 'rgba(26,26,46,0.4)', textAlign: 'center', padding: '2rem 0' }}>No reviews yet. Be the first to review this product.</p>
           )}
 
-          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-            <a href={`https://wa.me/2347019908205?text=Hi! I'd like to leave a review for ${product.name}`} target="_blank" rel="noreferrer"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#25D366', textDecoration: 'none', padding: '0.9rem 2rem', borderRadius: '8px', transition: 'opacity 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}>
-              <FaWhatsapp size={16}/> Leave a Review on WhatsApp
-            </a>
+          {/* ── Write a review ── */}
+          <div style={{ marginTop: '2.5rem', borderTop: '1px solid rgba(138,79,177,0.1)', paddingTop: '2.5rem' }}>
+            {reviewSuccess ? (
+              <div style={{ background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: '12px', padding: '1.5rem', textAlign: 'center' }}>
+                <FiCheck size={28} color="#16A34A" style={{ marginBottom: '0.5rem' }}/>
+                <p style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.3rem', color: '#16A34A', margin: '0 0 4px' }}>Thank you for your review!</p>
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.75rem', color: 'rgba(26,26,46,0.5)', margin: 0 }}>It will appear once approved.</p>
+              </div>
+            ) : !showReviewForm ? (
+              <div style={{ textAlign: 'center' }}>
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', fontWeight: 300, color: 'rgba(26,26,46,0.5)', marginBottom: '1rem' }}>
+                  Bought this product? Share your experience.
+                </p>
+                <button onClick={() => setShowReviewForm(true)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', border: 'none', padding: '0.9rem 2rem', borderRadius: '8px', cursor: 'pointer', transition: 'background 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#5B21B6' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#8A4FB1' }}>
+                  <FiSend size={15}/> Write a Review
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleReviewSubmit} style={{ background: '#FAF7FF', borderRadius: '16px', padding: '1.75rem', border: '1px solid rgba(138,79,177,0.12)' }}>
+                <h3 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.4rem', color: '#1A1A2E', margin: '0 0 1.5rem' }}>Write a Review</h3>
+
+                {/* Star rating */}
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <label style={{ display: 'block', fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.5)', marginBottom: '0.5rem' }}>Your Rating *</label>
+                  <StarPicker value={reviewForm.rating} onChange={v => setReviewForm(f => ({ ...f, rating: v }))}/>
+                </div>
+
+                {/* Name + City row */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.5)', marginBottom: '0.4rem' }}>Your Name *</label>
+                    <input value={reviewForm.reviewer_name} onChange={e => setReviewForm(f => ({ ...f, reviewer_name: e.target.value }))}
+                      placeholder="e.g. Amaka B."
+                      style={{ width: '100%', padding: '0.65rem 0.9rem', fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', border: '1px solid rgba(138,79,177,0.2)', borderRadius: '8px', outline: 'none', background: '#FFF', boxSizing: 'border-box' }}/>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.5)', marginBottom: '0.4rem' }}>City</label>
+                    <input value={reviewForm.city} onChange={e => setReviewForm(f => ({ ...f, city: e.target.value }))}
+                      placeholder="e.g. Lagos"
+                      style={{ width: '100%', padding: '0.65rem 0.9rem', fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', border: '1px solid rgba(138,79,177,0.2)', borderRadius: '8px', outline: 'none', background: '#FFF', boxSizing: 'border-box' }}/>
+                  </div>
+                </div>
+
+                {/* Title */}
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <label style={{ display: 'block', fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.5)', marginBottom: '0.4rem' }}>Review Title</label>
+                  <input value={reviewForm.title} onChange={e => setReviewForm(f => ({ ...f, title: e.target.value }))}
+                    placeholder="Summarise your experience"
+                    style={{ width: '100%', padding: '0.65rem 0.9rem', fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', border: '1px solid rgba(138,79,177,0.2)', borderRadius: '8px', outline: 'none', background: '#FFF', boxSizing: 'border-box' }}/>
+                </div>
+
+                {/* Body */}
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <label style={{ display: 'block', fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.5)', marginBottom: '0.4rem' }}>Your Review *</label>
+                  <textarea value={reviewForm.body} onChange={e => setReviewForm(f => ({ ...f, body: e.target.value }))}
+                    placeholder="Tell others what you loved about this product..."
+                    rows={4}
+                    style={{ width: '100%', padding: '0.65rem 0.9rem', fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', border: '1px solid rgba(138,79,177,0.2)', borderRadius: '8px', outline: 'none', background: '#FFF', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.7 }}/>
+                </div>
+
+                {reviewError && (
+                  <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.75rem', color: '#DC2626', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', padding: '0.65rem 0.9rem', marginBottom: '1rem' }}>{reviewError}</p>
+                )}
+
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <button type="submit" disabled={reviewSubmitting}
+                    style={{ flex: 1, minWidth: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: reviewSubmitting ? 'rgba(138,79,177,0.5)' : '#8A4FB1', border: 'none', padding: '0.9rem 1.5rem', borderRadius: '8px', cursor: reviewSubmitting ? 'not-allowed' : 'pointer', transition: 'background 0.2s' }}>
+                    <FiSend size={14}/> {reviewSubmitting ? 'Submitting…' : 'Submit Review'}
+                  </button>
+                  <button type="button" onClick={() => { setShowReviewForm(false); setReviewError('') }}
+                    style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8A4FB1', background: '#F3E8FF', border: 'none', padding: '0.9rem 1.25rem', borderRadius: '8px', cursor: 'pointer' }}>
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </section>

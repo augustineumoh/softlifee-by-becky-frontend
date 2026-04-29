@@ -18,6 +18,7 @@ import OrderSuccessPage from './pages/Ordersuccesspage'
 import { useEffect } from 'react'
 import { useAuth } from './store/authStore'
 import AccountEditPage from './pages/AccountEditPage'
+import OrderDetailPage from './pages/OrderDetailPage'
 
 
 
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="/order-success"                element={<OrderSuccessPage />} />
           <Route path="*"                              element={<NotFoundPage />} />
           <Route path="/account/edit"                 element={<AccountEditPage />} />
+          <Route path="/account/orders/:orderNumber"  element={<OrderDetailPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

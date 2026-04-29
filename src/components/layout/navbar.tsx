@@ -38,9 +38,9 @@ const shopCategories = [
     ],
   },
   {
-    heading: "Women's Essentials",
+    heading: 'Personal Essentials',
     links: [
-      { label: "All Women's",  to: '/shop/womens' },
+      { label: 'All Personal', to: '/shop/womens-essentials' },
       { label: 'Personal Care',to: '/shop/womens/personal-care' },
     ],
   },
@@ -182,20 +182,19 @@ export default function Navbar() {
           .sl-nav-inner { padding: 0 1.25rem !important; }
           .sl-nav-icons { gap: 1rem !important; }
           .sl-nav-logo-link { flex-shrink: 1 !important; min-width: 0; overflow: hidden; }
-          /* Constrain logo by width so it can't overflow the flex row */
           .sl-nav-logo  {
             height: auto !important;
-            width: clamp(170px, 50vw, 240px) !important;
-            max-width: 50vw !important;
+            width: clamp(220px, 62vw, 300px) !important;
+            max-width: 62vw !important;
             object-fit: contain !important;
           }
         }
         @media (max-width: 480px) {
-          .sl-nav-inner { padding: 0 1rem !important; }
-          .sl-nav-icons { gap: 0.65rem !important; }
+          .sl-nav-inner { padding: 0 0.75rem !important; }
+          .sl-nav-icons { gap: 0.5rem !important; }
           .sl-nav-logo  {
-            width: clamp(150px, 48vw, 220px) !important;
-            max-width: 48vw !important;
+            width: clamp(200px, 58vw, 260px) !important;
+            max-width: 58vw !important;
           }
         }
       `}</style>

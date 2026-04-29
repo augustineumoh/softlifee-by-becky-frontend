@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { FiUser, FiPackage, FiHeart, FiMapPin, FiLogOut, FiEdit2, FiChevronRight, FiCalendar, FiPhone, FiMail, FiShield } from 'react-icons/fi'
+import { FiUser, FiPackage, FiHeart, FiMapPin, FiLogOut, FiEdit2, FiChevronRight, FiCalendar, FiPhone, FiMail, FiShield, FiShoppingBag, FiCheck } from 'react-icons/fi'
 import { useAuth } from '../store/authStore'
 import { getCloudinaryUrl } from '../services/api'
+import { useCart } from '../store/cartStore'
 import { useOrders } from '../hooks/useOrders'
 import { useWishlist } from '../hooks/useWishlist'
 
@@ -19,16 +20,22 @@ const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
 
 export default function AccountPage() {
   const navigate = useNavigate()
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, logout, loadUser } = useAuth()
   const { orders: ordersRaw, loading: ordersLoading, refetch: refetchOrders } = useOrders()
   const orders = Array.isArray(ordersRaw) ? ordersRaw : []
   const { items: wishlistItemsRaw } = useWishlist()
   const wishlistItems = Array.isArray(wishlistItemsRaw) ? wishlistItemsRaw : []
+  const { addItem } = useCart()
   const [activeTab, setActiveTab] = useState('orders')
+  const [addedToCart, setAddedToCart] = useState<number | null>(null)
 
   useEffect(() => {
     if (!isAuthenticated) navigate('/login', { state: { from: '/account' } })
   }, [isAuthenticated])
+
+  useEffect(() => {
+    if (isAuthenticated) loadUser()
+  }, [])
 
   if (!user) return null
 
@@ -158,9 +165,11 @@ export default function AccountPage() {
                 {orders.map(order => {
                   const sc = STATUS_COLORS[order.status] || { bg: '#F3E8FF', color: '#5B21B6' }
                   return (
-                    <div key={order.id} style={{ background: '#FFF', borderRadius: '14px', padding: 'clamp(1rem,3vw,1.5rem)', border: '1px solid rgba(138,79,177,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', transition: 'box-shadow 0.2s', cursor: 'default' }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(138,79,177,0.1)' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}>
+                    <div key={order.id}
+                      onClick={() => navigate(`/account/orders/${order.order_number}`, { state: { order } })}
+                      style={{ background: '#FFF', borderRadius: '14px', padding: 'clamp(1rem,3vw,1.5rem)', border: '1px solid rgba(138,79,177,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', transition: 'box-shadow 0.2s, border-color 0.2s', cursor: 'pointer' }}
+                      onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.boxShadow = '0 4px 20px rgba(138,79,177,0.1)'; el.style.borderColor = 'rgba(138,79,177,0.3)' }}
+                      onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.boxShadow = 'none'; el.style.borderColor = 'rgba(138,79,177,0.1)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: 0 }}>
                         <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: sc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <FiPackage size={18} color={sc.color} />
@@ -202,21 +211,50 @@ export default function AccountPage() {
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,200px), 1fr))', gap: '1.25rem' }}>
-                {wishlistItems.map(item => (
-                  <Link key={item.id} to={`/product/${item.product.slug}`} style={{ textDecoration: 'none' }}>
-                    <div style={{ background: '#FFF', borderRadius: '14px', overflow: 'hidden', border: '1px solid rgba(138,79,177,0.1)', transition: 'all 0.25s' }}
+                {wishlistItems.map(item => {
+                  const imgSrc = item.product.primary_image?.image
+                    ? getCloudinaryUrl(item.product.primary_image.image, 400)
+                    : item.product.color_variants?.[0]?.image
+                      ? getCloudinaryUrl(item.product.color_variants[0].image, 400)
+                      : ''
+                  const isAdded = addedToCart === item.id
+                  return (
+                    <div key={item.id} style={{ background: '#FFF', borderRadius: '14px', overflow: 'hidden', border: '1px solid rgba(138,79,177,0.1)', transition: 'all 0.25s', display: 'flex', flexDirection: 'column' }}
                       onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor='#8A4FB1'; el.style.boxShadow='0 6px 24px rgba(138,79,177,0.1)'; el.style.transform='translateY(-2px)' }}
                       onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor='rgba(138,79,177,0.1)'; el.style.boxShadow='none'; el.style.transform='none' }}>
-                      <div style={{ height: '180px', background: '#F0E8FA', overflow: 'hidden' }}>
-                        {item.product.primary_image?.image && <img src={item.product.primary_image.image} alt={item.product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }} />}
-                      </div>
-                      <div style={{ padding: '0.9rem' }}>
-                        <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '4px', lineHeight: 1.2 }}>{item.product.name}</p>
-                        <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.88rem', fontWeight: 700, color: '#8A4FB1' }}>{formatPrice(item.product.price)}</p>
+                      <Link to={`/product/${item.product.slug}`} style={{ textDecoration: 'none' }}>
+                        <div style={{ height: '180px', background: '#F0E8FA', overflow: 'hidden' }}>
+                          {imgSrc
+                            ? <img src={imgSrc} alt={item.product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }}/>
+                            : <div style={{ width: '100%', height: '100%', background: '#F0E8FA' }}/>
+                          }
+                        </div>
+                        <div style={{ padding: '0.9rem 0.9rem 0.5rem' }}>
+                          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '4px', lineHeight: 1.2 }}>{item.product.name}</p>
+                          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.88rem', fontWeight: 700, color: '#8A4FB1' }}>{formatPrice(item.product.active_price || item.product.price)}</p>
+                        </div>
+                      </Link>
+                      <div style={{ padding: '0 0.9rem 0.9rem' }}>
+                        <button
+                          onClick={() => {
+                            addItem({
+                              id: item.product.id,
+                              name: item.product.name,
+                              price: parseFloat(String(item.product.active_price || item.product.price)),
+                              image: imgSrc,
+                              slug: item.product.slug,
+                              category: typeof item.product.category === 'string' ? item.product.category : item.product.category?.name || '',
+                            })
+                            setAddedToCart(item.id)
+                            setTimeout(() => setAddedToCart(null), 2000)
+                          }}
+                          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#FFF', background: isAdded ? '#16A34A' : '#8A4FB1', border: 'none', borderRadius: '8px', padding: '0.55rem 0', cursor: 'pointer', transition: 'background 0.25s' }}>
+                          {isAdded ? <><FiCheck size={12}/> Added!</> : <><FiShoppingBag size={12}/> Add to Cart</>}
+                        </button>
                       </div>
                     </div>
-                  </Link>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>
