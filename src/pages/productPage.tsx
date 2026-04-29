@@ -205,7 +205,7 @@ export default function ProductDetailPage() {
     const url = encodeURIComponent(window.location.href)
     window.open(`https://wa.me/?text=${encodeURIComponent(`Check out ${product.name} on Soft Lifee! ${formatPrice(product.active_price)} `)}${url}`, '_blank')
   }
-  const shareInstagram = () => window.open('https://instagram.com/softlifeebybecky', '_blank')
+  const shareInstagram = () => window.open('https://www.instagram.com/soft.lifeebybeckie/', '_blank')
 
   return (
     <div style={{ background: '#FAF7FF', minHeight: '100vh', paddingTop: '68px' }}>
@@ -576,7 +576,7 @@ export default function ProductDetailPage() {
           )}
 
           <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-            <a href={`https://wa.me/2348000000000?text=Hi! I'd like to leave a review for ${product.name}`} target="_blank" rel="noreferrer"
+            <a href={`https://wa.me/2347019908205?text=Hi! I'd like to leave a review for ${product.name}`} target="_blank" rel="noreferrer"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#25D366', textDecoration: 'none', padding: '0.9rem 2rem', borderRadius: '8px', transition: 'opacity 0.2s' }}
               onMouseEnter={e => { e.currentTarget.style.opacity = '0.85' }}
               onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}>
