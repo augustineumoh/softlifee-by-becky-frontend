@@ -180,13 +180,23 @@ export default function Navbar() {
         /* Mobile navbar overrides */
         @media (max-width: 900px) {
           .sl-nav-inner { padding: 0 1.25rem !important; }
-          .sl-nav-logo  { height: 130px !important; }
           .sl-nav-icons { gap: 1rem !important; }
+          .sl-nav-logo-link { flex-shrink: 1 !important; min-width: 0; overflow: hidden; }
+          /* Constrain logo by width so it can't overflow the flex row */
+          .sl-nav-logo  {
+            height: auto !important;
+            width: clamp(110px, 32vw, 180px) !important;
+            max-width: 32vw !important;
+            object-fit: contain !important;
+          }
         }
         @media (max-width: 480px) {
           .sl-nav-inner { padding: 0 1rem !important; }
-          .sl-nav-logo  { height: 110px !important; }
-          .sl-nav-icons { gap: 0.75rem !important; }
+          .sl-nav-icons { gap: 0.65rem !important; }
+          .sl-nav-logo  {
+            width: clamp(90px, 28vw, 140px) !important;
+            max-width: 28vw !important;
+          }
         }
       `}</style>
 
@@ -225,7 +235,7 @@ export default function Navbar() {
           </div>
 
           {/* ── CENTER LOGO ── */}
-          <Link to="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
+          <Link to="/" className="sl-nav-logo-link" style={{ textDecoration: 'none', flexShrink: 0 }}>
             <img
               src={isLight && !hasLightHero ? img1 : img2}
               alt="Soft Lifee by Becky"
