@@ -105,7 +105,26 @@ export default function ContactPage() {
   const handleSubmit = () => {
     if (!form.name || !form.email || !form.message) return
     setLoading(true)
-    setTimeout(() => { setLoading(false); setSubmitted(true) }, 1200)
+
+    const subjectLabel: Record<string, string> = {
+      order: 'Order Enquiry', product: 'Product Question',
+      return: 'Returns & Refunds', wholesale: 'Wholesale / Bulk Order', other: 'Other',
+    }
+    const subject = form.subject ? subjectLabel[form.subject] || form.subject : 'General Enquiry'
+
+    const waMessage = [
+      `*New message from Soft Lifee website*`,
+      ``,
+      `*Name:* ${form.name}`,
+      `*Email:* ${form.email}`,
+      `*Subject:* ${subject}`,
+      ``,
+      `*Message:*`,
+      form.message,
+    ].join('\n')
+
+    window.open(`https://wa.me/2347019908205?text=${encodeURIComponent(waMessage)}`, '_blank')
+    setTimeout(() => { setLoading(false); setSubmitted(true) }, 600)
   }
 
   return (

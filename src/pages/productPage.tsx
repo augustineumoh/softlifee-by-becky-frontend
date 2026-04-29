@@ -168,9 +168,14 @@ export default function ProductDetailPage() {
     }
   }, [user])
 
-  useEffect(() => {
+  const fetchReviews = () => {
     if (!slug) return
     reviewsAPI.getForProduct(slug).then(setReviews).catch(() => {})
+  }
+
+  useEffect(() => {
+    if (!slug) return
+    fetchReviews()
     productsAPI.getRelated(slug)
       .then(data => setRelated((Array.isArray(data) ? data : []).slice(0, 4)))
       .catch(() => {})
@@ -194,6 +199,7 @@ export default function ProductDetailPage() {
       })
       setReviewSuccess(true)
       setShowReviewForm(false)
+      fetchReviews()
     } catch (err: any) {
       setReviewError(err?.detail || err?.error || Object.values(err || {})?.[0]?.[0] || 'Could not submit review. Please try again.')
     } finally {
@@ -596,9 +602,15 @@ export default function ProductDetailPage() {
       <section style={{ padding: '4rem clamp(1.5rem,6vw,5rem)', background: '#FFFFFF', borderTop: '1px solid rgba(138,79,177,0.08)' }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#8A4FB1', marginBottom: '0.4rem' }}>What customers say</p>
-              <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: 'clamp(1.8rem,3vw,2.5rem)', fontWeight: 600, color: '#1A1A2E', margin: 0 }}>Reviews</h2>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1rem', flexWrap: 'wrap' }}>
+              <div>
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: '#8A4FB1', marginBottom: '0.4rem' }}>What customers say</p>
+                <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: 'clamp(1.8rem,3vw,2.5rem)', fontWeight: 600, color: '#1A1A2E', margin: 0 }}>Reviews</h2>
+              </div>
+              <button onClick={fetchReviews}
+                style={{ display: 'flex', alignItems: 'center', gap: '5px', fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8A4FB1', background: '#F3E8FF', border: 'none', borderRadius: '8px', padding: '0.45rem 0.85rem', cursor: 'pointer', marginBottom: '4px' }}>
+                <FiRefreshCw size={11}/> Refresh
+              </button>
             </div>
             {reviews.length > 0 && (
               <div style={{ background: '#FAF7FF', padding: '1rem 1.5rem', borderRadius: '12px', border: '1px solid rgba(138,79,177,0.1)', textAlign: 'center' }}>
