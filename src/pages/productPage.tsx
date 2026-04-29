@@ -284,7 +284,7 @@ export default function ProductDetailPage() {
 
           {/* Thumbnails strip */}
           {effectiveMedia.length > 1 && (
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div className="pp-thumbs" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               {effectiveMedia.map((item, i) =>
                 item.type === 'video' ? (
                   <VideoThumb key={i} src={item.src} poster={item.poster} isActive={activeIdx === i} onClick={() => setActiveIdx(i)}/>
@@ -646,6 +646,15 @@ export default function ProductDetailPage() {
         @media (max-width: 900px) {
           div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
           div[style*="position: sticky"] { position: relative !important; top: auto !important; }
+          /* tighten gap on mobile */
+          div[style*="gap: 4rem"] { gap: 2rem !important; }
+        }
+        @media (max-width: 640px) {
+          /* product thumbnails: scroll row */
+          .pp-thumbs { flex-wrap: nowrap !important; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+          .pp-thumbs::-webkit-scrollbar { display: none; }
+          /* delivery grid: single column */
+          div[style*="grid-template-columns: 1fr 1fr"][style*="margin-bottom: 2rem"] { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>

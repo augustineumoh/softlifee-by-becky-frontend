@@ -104,10 +104,10 @@ const perks = [
 
 // ── Product Card ──────────────────────────────────────────────────────────────
 function ProductCard({ product, delay = 0 }: { product: typeof bestSellers[0]; delay?: number }) {
-  const [hovered, setHovered]   = useState(false)
+  const [hovered, setHovered]       = useState(false)
   const [wishlisted, setWishlisted] = useState(false)
-  const [adding, setAdding]     = useState(false)
-  const { addItem }             = useCart()
+  const [adding, setAdding]         = useState(false)
+  const { addItem }                 = useCart()
   const badgeColors: Record<string, string> = {
     'Best Seller': '#8A4FB1', 'Top Rated': '#5B21B6',
     'New': '#D4AF37', 'Trending': '#1A1A2E', 'Premium': '#C4A8D4',
@@ -124,25 +124,31 @@ function ProductCard({ product, delay = 0 }: { product: typeof bestSellers[0]; d
   return (
     <Reveal delay={delay}>
       <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ cursor: 'pointer' }}>
-        <div style={{ position: 'relative', overflow: 'hidden', background: '#F0E8FA', aspectRatio: '3/4', marginBottom: '1rem' }}>
+        <div style={{ position: 'relative', overflow: 'hidden', background: '#F0E8FA', aspectRatio: '3/4', marginBottom: '0.75rem' }}>
           <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)', transform: hovered ? 'scale(1.06)' : 'scale(1)' }} />
-          <div style={{ position: 'absolute', top: '12px', left: '12px', background: badgeColors[product.badge] || '#1A1A2E', color: '#FFF', fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', padding: '4px 10px' }}>{product.badge}</div>
+          <div style={{ position: 'absolute', top: '10px', left: '10px', background: badgeColors[product.badge] || '#1A1A2E', color: '#FFF', fontFamily: '"Jost", sans-serif', fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '3px 8px' }}>{product.badge}</div>
           <button onClick={e => { e.preventDefault(); setWishlisted(w => !w) }}
-            style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(255,255,255,0.9)', border: 'none', cursor: 'pointer', width: '34px', height: '34px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill={wishlisted ? '#8A4FB1' : 'none'} stroke={wishlisted ? '#8A4FB1' : '#1A1A2E'} strokeWidth="1.8">
+            style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(255,255,255,0.9)', border: 'none', cursor: 'pointer', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill={wishlisted ? '#8A4FB1' : 'none'} stroke={wishlisted ? '#8A4FB1' : '#1A1A2E'} strokeWidth="1.8">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
           </button>
-          <div onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.92)', backdropFilter: 'blur(4px)', padding: '0.9rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#FFF' }}>{adding ? '✓ Added!' : 'Add to Cart'}</span>
+          {/* Desktop: slide-up on hover */}
+          <div onClick={handleAdd} className="hp-add-hover" style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.92)', backdropFilter: 'blur(4px)', padding: '0.85rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF' }}>{adding ? '✓ Added!' : 'Add to Cart'}</span>
           </div>
         </div>
         <Link to={`/product/${product.slug}`} style={{ textDecoration: 'none' }}>
-          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#8A4FB1', marginBottom: '4px' }}>{product.category}</p>
-          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.15rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '6px', lineHeight: 1.2 }}>{product.name}</p>
-          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.9rem', fontWeight: 700, color: '#1A1A2E' }}>{formatPrice(product.price)}</p>
+          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8A4FB1', marginBottom: '3px' }}>{product.category}</p>
+          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1rem,2vw,1.15rem)', fontWeight: 600, color: '#1A1A2E', marginBottom: '4px', lineHeight: 1.2 }}>{product.name}</p>
+          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.88rem', fontWeight: 700, color: '#1A1A2E' }}>{formatPrice(product.price)}</p>
         </Link>
+        {/* Mobile: always-visible add button */}
+        <button onClick={handleAdd} className="hp-add-mobile"
+          style={{ display: 'none', width: '100%', marginTop: '0.5rem', padding: '0.65rem', background: adding ? '#16A34A' : '#8A4FB1', color: '#FFF', border: 'none', cursor: 'pointer', fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', borderRadius: '3px', transition: 'background 0.25s' }}>
+          {adding ? '✓ Added!' : 'Add to Cart'}
+        </button>
       </div>
     </Reveal>
   )
@@ -237,7 +243,7 @@ export default function HomePage() {
       </div>
 
       {/* ── CATEGORY SLIDER ─────────────────────────────────── */}
-      <section style={{ padding: '6rem 0 6rem clamp(1.5rem,6vw,5rem)', background: 'linear-gradient(160deg, #FAF7FF 0%, #EDE0F7 60%, #FAF7FF 100%)' }}>
+      <section className="hp-section-lg" style={{ padding: 'clamp(3rem,6vw,6rem) 0 clamp(3rem,6vw,6rem) clamp(1.25rem,6vw,5rem)', background: 'linear-gradient(160deg, #FAF7FF 0%, #EDE0F7 60%, #FAF7FF 100%)' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '3rem', paddingRight: 'clamp(1.5rem,6vw,5rem)' }}>
           <SectionLabel eyebrow="Explore" title={<>Shop by<br />Category</>} />
           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -253,7 +259,7 @@ export default function HomePage() {
             })}
           </div>
         </div>
-        <div style={{ overflow: 'hidden' }}>
+        <div className="hp-cat-track" style={{ overflow: 'hidden' }}>
           <div style={{ display: 'flex', gap: '1rem', transition: 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)', transform: `translateX(calc(-${catIdx} * (33.333% + 0.333rem)))` }}>
             {categories.map((cat, i) => (
               <Reveal key={cat.label} delay={i * 0.08} from="bottom">
@@ -354,7 +360,8 @@ export default function HomePage() {
 
           {/* Prev / Next arrows */}
           <button onClick={() => { if (autoRef.current) clearInterval(autoRef.current); slideTestimonial('prev') }}
-            style={{ position: 'absolute', left: '-24px', top: '50%', transform: 'translateY(-50%)', width: '48px', height: '48px', borderRadius: '50%', background: '#FFFFFF', border: '1px solid rgba(138,79,177,0.2)', boxShadow: '0 4px 16px rgba(138,79,177,0.12)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+            className="hp-testimonial-prev"
+            style={{ position: 'absolute', left: '-24px', top: '50%', transform: 'translateY(-50%)', width: '44px', height: '44px', borderRadius: '50%', background: '#FFFFFF', border: '1px solid rgba(138,79,177,0.2)', boxShadow: '0 4px 16px rgba(138,79,177,0.12)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
             onMouseEnter={e => { e.currentTarget.style.background = '#8A4FB1' }}
             onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A4FB1" strokeWidth="2" style={{ transition: 'stroke 0.2s' }}
@@ -364,7 +371,8 @@ export default function HomePage() {
             </svg>
           </button>
           <button onClick={() => { if (autoRef.current) clearInterval(autoRef.current); slideTestimonial('next') }}
-            style={{ position: 'absolute', right: '-24px', top: '50%', transform: 'translateY(-50%)', width: '48px', height: '48px', borderRadius: '50%', background: '#FFFFFF', border: '1px solid rgba(138,79,177,0.2)', boxShadow: '0 4px 16px rgba(138,79,177,0.12)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+            className="hp-testimonial-next"
+            style={{ position: 'absolute', right: '-24px', top: '50%', transform: 'translateY(-50%)', width: '44px', height: '44px', borderRadius: '50%', background: '#FFFFFF', border: '1px solid rgba(138,79,177,0.2)', boxShadow: '0 4px 16px rgba(138,79,177,0.12)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
             onMouseEnter={e => { e.currentTarget.style.background = '#8A4FB1' }}
             onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A4FB1" strokeWidth="2"
@@ -413,6 +421,38 @@ export default function HomePage() {
 
       <style>{`
         @keyframes sl-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        @media (max-width: 640px) {
+          /* Mobile add button */
+          .hp-add-hover  { display: none !important; }
+          .hp-add-mobile { display: block !important; }
+
+          /* Brand story: single column */
+          section[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+
+          /* Testimonial arrows: keep inside viewport */
+          .hp-testimonial-prev { left: 4px !important; }
+          .hp-testimonial-next { right: 4px !important; }
+
+          /* Section padding: tighten vertical rhythm */
+          .hp-section-md  { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+          .hp-section-lg  { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+
+          /* Category slider: scrollable on mobile */
+          .hp-cat-track {
+            overflow-x: auto !important;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            scroll-snap-type: x mandatory;
+            padding-right: 1.25rem;
+          }
+          .hp-cat-track::-webkit-scrollbar { display: none; }
+          .hp-cat-track > div {
+            transform: none !important;
+            transition: none !important;
+          }
+        }
+
         @media (max-width: 768px) {
           section[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
         }
@@ -426,7 +466,7 @@ function CategorySlideCard({ cat }: { cat: typeof categories[0] }) {
   const [hovered, setHovered] = useState(false)
   return (
     <Link to={cat.to} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ display: 'block', position: 'relative', overflow: 'hidden', textDecoration: 'none', background: '#EDE0F7', width: 'calc(33.333vw - 2rem)', minWidth: '280px', maxWidth: '420px', height: '460px', flexShrink: 0, borderRadius: '4px' }}>
+      style={{ display: 'block', position: 'relative', overflow: 'hidden', textDecoration: 'none', background: '#EDE0F7', width: 'calc(33.333vw - 2rem)', minWidth: '260px', maxWidth: '420px', height: '420px', flexShrink: 0, borderRadius: '4px', scrollSnapAlign: 'start' }}>
       <img src={cat.image} alt={cat.label} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94)', transform: hovered ? 'scale(1.07)' : 'scale(1)' }} />
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,26,46,0.8) 0%, transparent 55%)' }} />
       <div style={{ position: 'absolute', bottom: '1.8rem', left: '1.5rem' }}>
