@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { FiUser, FiPackage, FiHeart, FiMapPin, FiLogOut, FiEdit2, FiChevronRight, FiCalendar, FiPhone, FiMail, FiShield, FiShoppingBag, FiCheck } from 'react-icons/fi'
+import { FiUser, FiPackage, FiHeart, FiMapPin, FiLogOut, FiEdit2, FiChevronRight, FiCalendar, FiPhone, FiMail, FiShield, FiShoppingBag, FiCheck, FiPlus, FiTrash2, FiX } from 'react-icons/fi'
 import { useAuth } from '../store/authStore'
-import { getCloudinaryUrl } from '../services/api'
+import { getCloudinaryUrl, authAPI } from '../services/api'
+import type { Address } from '../services/api'
 import { useCart } from '../store/cartStore'
 import { useOrders } from '../hooks/useOrders'
 import { useWishlist } from '../hooks/useWishlist'
@@ -16,6 +17,200 @@ const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   shipped:    { bg: '#DBEAFE', color: '#1E40AF' },
   delivered:  { bg: '#DCFCE7', color: '#166534' },
   cancelled:  { bg: '#FEE2E2', color: '#991B1B' },
+}
+
+const NG_STATES = ['Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue','Borno','Cross River','Delta','Ebonyi','Edo','Ekiti','Enugu','FCT','Gombe','Imo','Jigawa','Kaduna','Kano','Katsina','Kebbi','Kogi','Kwara','Lagos','Nasarawa','Niger','Ogun','Ondo','Osun','Oyo','Plateau','Rivers','Sokoto','Taraba','Yobe','Zamfara']
+
+const EMPTY_FORM = { label: '', full_name: '', phone: '', address: '', city: '', state: '', is_default: false }
+
+function AddressesTab() {
+  const [addresses, setAddresses] = useState<Address[]>([])
+  const [loading, setLoading]     = useState(true)
+  const [showForm, setShowForm]   = useState(false)
+  const [editing, setEditing]     = useState<Address | null>(null)
+  const [form, setForm]           = useState(EMPTY_FORM)
+  const [saving, setSaving]       = useState(false)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [error, setError]         = useState('')
+
+  const load = async () => {
+    setLoading(true)
+    try { setAddresses(await authAPI.getAddresses() as Address[]) } catch {}
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [])
+
+  const openAdd = () => {
+    setEditing(null); setForm(EMPTY_FORM); setError(''); setShowForm(true)
+  }
+  const openEdit = (a: Address) => {
+    setEditing(a)
+    setForm({ label: a.label, full_name: a.full_name, phone: a.phone, address: a.address, city: a.city, state: a.state, is_default: a.is_default })
+    setError(''); setShowForm(true)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSaving(true); setError('')
+    try {
+      if (editing) {
+        const updated = await authAPI.updateAddress(editing.id, form) as Address
+        setAddresses(prev => prev.map(a => a.id === editing.id ? updated : a))
+      } else {
+        const created = await authAPI.addAddress(form) as Address
+        setAddresses(prev => [...prev, created])
+      }
+      setShowForm(false)
+    } catch { setError('Something went wrong. Please try again.') }
+    setSaving(false)
+  }
+
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Delete this address?')) return
+    setDeletingId(id)
+    try { await authAPI.deleteAddress(id); setAddresses(prev => prev.filter(a => a.id !== id)) } catch {}
+    setDeletingId(null)
+  }
+
+  const handleSetDefault = async (a: Address) => {
+    try { await authAPI.updateAddress(a.id, { is_default: true }); await load() } catch {}
+  }
+
+  const inputStyle: React.CSSProperties = { width: '100%', padding: '0.65rem 0.9rem', fontFamily: '"Jost", sans-serif', fontSize: '0.82rem', border: '1.5px solid rgba(138,79,177,0.2)', borderRadius: '8px', outline: 'none', color: '#1A1A2E', background: '#FAF7FF', boxSizing: 'border-box' }
+  const labelStyle: React.CSSProperties = { fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.45)', display: 'block', marginBottom: '4px' }
+
+  return (
+    <div style={{ maxWidth: '680px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: 'clamp(1.5rem,3vw,1.8rem)', fontWeight: 600, color: '#1A1A2E', margin: 0 }}>Saved Addresses</h2>
+        {!showForm && (
+          <button onClick={openAdd}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', border: 'none', borderRadius: '8px', padding: '0.65rem 1.1rem', cursor: 'pointer' }}>
+            <FiPlus size={13}/> Add Address
+          </button>
+        )}
+      </div>
+
+      {/* ── ADD / EDIT FORM ── */}
+      {showForm && (
+        <div style={{ background: '#FFF', borderRadius: '16px', padding: '1.75rem', border: '1px solid rgba(138,79,177,0.18)', marginBottom: '1.5rem', boxShadow: '0 4px 24px rgba(138,79,177,0.08)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+            <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8A4FB1', margin: 0 }}>{editing ? 'Edit Address' : 'New Address'}</p>
+            <button onClick={() => setShowForm(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(26,26,46,0.4)', padding: '4px', display: 'flex' }}><FiX size={18}/></button>
+          </div>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.9rem' }}>
+              <div>
+                <label style={labelStyle}>Label</label>
+                <input style={inputStyle} placeholder="e.g. Home, Work" value={form.label} required onChange={e => setForm(f => ({ ...f, label: e.target.value }))} onFocus={e => { e.currentTarget.style.borderColor='#8A4FB1' }} onBlur={e => { e.currentTarget.style.borderColor='rgba(138,79,177,0.2)' }} />
+              </div>
+              <div>
+                <label style={labelStyle}>Full Name</label>
+                <input style={inputStyle} placeholder="Recipient name" value={form.full_name} required onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))} onFocus={e => { e.currentTarget.style.borderColor='#8A4FB1' }} onBlur={e => { e.currentTarget.style.borderColor='rgba(138,79,177,0.2)' }} />
+              </div>
+            </div>
+            <div>
+              <label style={labelStyle}>Phone Number</label>
+              <input style={inputStyle} placeholder="+234..." value={form.phone} required onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} onFocus={e => { e.currentTarget.style.borderColor='#8A4FB1' }} onBlur={e => { e.currentTarget.style.borderColor='rgba(138,79,177,0.2)' }} />
+            </div>
+            <div>
+              <label style={labelStyle}>Street Address</label>
+              <input style={inputStyle} placeholder="House number, street, area" value={form.address} required onChange={e => setForm(f => ({ ...f, address: e.target.value }))} onFocus={e => { e.currentTarget.style.borderColor='#8A4FB1' }} onBlur={e => { e.currentTarget.style.borderColor='rgba(138,79,177,0.2)' }} />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.9rem' }}>
+              <div>
+                <label style={labelStyle}>City</label>
+                <input style={inputStyle} placeholder="City" value={form.city} required onChange={e => setForm(f => ({ ...f, city: e.target.value }))} onFocus={e => { e.currentTarget.style.borderColor='#8A4FB1' }} onBlur={e => { e.currentTarget.style.borderColor='rgba(138,79,177,0.2)' }} />
+              </div>
+              <div>
+                <label style={labelStyle}>State</label>
+                <select style={{ ...inputStyle, cursor: 'pointer' }} value={form.state} required onChange={e => setForm(f => ({ ...f, state: e.target.value }))}>
+                  <option value="">Select state</option>
+                  {NG_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none' }}>
+              <input type="checkbox" checked={form.is_default} onChange={e => setForm(f => ({ ...f, is_default: e.target.checked }))} style={{ accentColor: '#8A4FB1', width: '16px', height: '16px' }} />
+              <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', fontWeight: 500, color: '#1A1A2E' }}>Set as default address</span>
+            </label>
+            {error && <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.75rem', color: '#BE123C', margin: 0 }}>{error}</p>}
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button type="button" onClick={() => setShowForm(false)}
+                style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8A4FB1', background: '#F3E8FF', border: 'none', borderRadius: '8px', padding: '0.65rem 1.1rem', cursor: 'pointer' }}>
+                Cancel
+              </button>
+              <button type="submit" disabled={saving}
+                style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#FFF', background: saving ? 'rgba(138,79,177,0.6)' : '#8A4FB1', border: 'none', borderRadius: '8px', padding: '0.65rem 1.25rem', cursor: saving ? 'default' : 'pointer' }}>
+                {saving ? 'Saving…' : editing ? 'Save Changes' : 'Add Address'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* ── ADDRESS LIST ── */}
+      {loading ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {[1,2].map(i => <div key={i} style={{ background: '#FFF', borderRadius: '12px', height: '100px', border: '1px solid rgba(138,79,177,0.08)', animation: 'pulse 1.5s infinite' }} />)}
+        </div>
+      ) : addresses.length === 0 && !showForm ? (
+        <div style={{ background: '#FFF', borderRadius: '16px', padding: '3rem 2rem', border: '1px solid rgba(138,79,177,0.1)', textAlign: 'center' }}>
+          <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#F3E8FF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+            <FiMapPin size={32} color="#8A4FB1" />
+          </div>
+          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.2rem', color: '#8A4FB1', margin: '0 0 0.4rem' }}>No saved addresses yet</p>
+          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', color: 'rgba(26,26,46,0.4)', margin: '0 0 1.5rem' }}>Add an address for faster checkout.</p>
+          <button onClick={openAdd}
+            style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', border: 'none', borderRadius: '8px', padding: '0.75rem 1.5rem', cursor: 'pointer' }}>
+            Add Your First Address
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+          {addresses.map(addr => (
+            <div key={addr.id} style={{ background: '#FFF', borderRadius: '14px', padding: '1.25rem 1.4rem', border: `1px solid ${addr.is_default ? 'rgba(138,79,177,0.4)' : 'rgba(138,79,177,0.1)'}`, position: 'relative', transition: 'box-shadow 0.2s' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(138,79,177,0.1)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = 'none' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                    <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', fontWeight: 700, color: '#1A1A2E' }}>{addr.label}</span>
+                    {addr.is_default && (
+                      <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.5rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', background: '#8A4FB1', color: '#FFF', padding: '2px 8px', borderRadius: '100px' }}>Default</span>
+                    )}
+                  </div>
+                  <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.82rem', fontWeight: 500, color: '#1A1A2E', margin: '0 0 2px' }}>{addr.full_name}</p>
+                  <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', color: 'rgba(26,26,46,0.55)', margin: '0 0 2px', lineHeight: 1.5 }}>{addr.address}</p>
+                  <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', color: 'rgba(26,26,46,0.55)', margin: '0 0 2px' }}>{addr.city}, {addr.state}</p>
+                  <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.75rem', color: 'rgba(26,26,46,0.4)', margin: 0 }}>{addr.phone}</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end', flexShrink: 0 }}>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button onClick={() => openEdit(addr)}
+                      style={{ display: 'flex', alignItems: 'center', gap: '4px', fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8A4FB1', background: '#F3E8FF', border: 'none', borderRadius: '6px', padding: '0.45rem 0.75rem', cursor: 'pointer' }}>
+                      <FiEdit2 size={11}/> Edit
+                    </button>
+                    <button onClick={() => handleDelete(addr.id)} disabled={deletingId === addr.id}
+                      style={{ display: 'flex', alignItems: 'center', gap: '4px', fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#BE123C', background: '#FFF1F2', border: 'none', borderRadius: '6px', padding: '0.45rem 0.75rem', cursor: 'pointer' }}>
+                      <FiTrash2 size={11}/> {deletingId === addr.id ? '…' : 'Delete'}
+                    </button>
+                  </div>
+                  {!addr.is_default && (
+                    <button onClick={() => handleSetDefault(addr)}
+                      style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.4)', background: 'none', border: '1px solid rgba(138,79,177,0.15)', borderRadius: '6px', padding: '0.4rem 0.75rem', cursor: 'pointer' }}>
+                      Set as Default
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function AccountPage() {
@@ -353,18 +548,7 @@ export default function AccountPage() {
         )}
 
         {/* ── ADDRESSES ── */}
-        {activeTab === 'addresses' && (
-          <div style={{ maxWidth: '640px' }}>
-            <h2 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: 'clamp(1.5rem,3vw,1.8rem)', fontWeight: 600, color: '#1A1A2E', marginBottom: '1.5rem' }}>Saved Addresses</h2>
-            <div style={{ background: '#FFF', borderRadius: '16px', padding: '2.5rem', border: '1px solid rgba(138,79,177,0.1)', textAlign: 'center' }}>
-              <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#F3E8FF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
-                <FiMapPin size={32} color="#8A4FB1" />
-              </div>
-              <p style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontSize: '1.2rem', color: '#8A4FB1', margin: '0 0 0.5rem' }}>Address management coming soon</p>
-              <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', color: 'rgba(26,26,46,0.4)', margin: 0 }}>Save delivery addresses here for faster checkout</p>
-            </div>
-          </div>
-        )}
+        {activeTab === 'addresses' && <AddressesTab />}
       </div>
 
       <style>{`
