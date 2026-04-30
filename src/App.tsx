@@ -20,6 +20,7 @@ import { useAuth } from './store/authStore'
 import AccountEditPage from './pages/AccountEditPage'
 import OrderDetailPage from './pages/OrderDetailPage'
 import ReturnPolicyPage from './pages/ReturnPolicyPage'
+import FAQPage from './pages/FAQPage'
 
 
 
@@ -58,6 +59,7 @@ export default function App() {
           <Route path="/account/edit"                 element={<AccountEditPage />} />
           <Route path="/account/orders/:orderNumber"  element={<OrderDetailPage />} />
           <Route path="/returns-policy"               element={<ReturnPolicyPage />} />
+          <Route path="/faqs"                         element={<FAQPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

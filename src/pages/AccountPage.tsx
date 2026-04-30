@@ -36,7 +36,11 @@ function AddressesTab() {
 
   const load = async () => {
     setLoading(true)
-    try { setAddresses(await authAPI.getAddresses() as Address[]) } catch {}
+    try {
+      const data = await authAPI.getAddresses()
+      const list = Array.isArray(data) ? data : (data as any)?.results ?? []
+      setAddresses(list as Address[])
+    } catch {}
     setLoading(false)
   }
 
@@ -233,7 +237,13 @@ export default function AccountPage() {
     if (isAuthenticated) loadUser()
   }, [])
 
-  if (!user) return null
+  if (!isAuthenticated) return null
+
+  if (!user) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FAF7FF', paddingTop: '68px' }}>
+      <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.82rem', color: '#8A4FB1', letterSpacing: '0.05em' }}>Loading your account…</p>
+    </div>
+  )
 
   const handleLogout = async () => {
     await logout()
