@@ -23,10 +23,10 @@ type MediaItem =
   | { type: 'video'; src: string; poster?: string }
 
 const DELIVERY_INFO = [
-  { icon: <FiTruck size={16}/>,     title: 'Nationwide Delivery', desc: 'Lagos: 1–2 days · Other states: 3–5 days' },
-  { icon: <FiRefreshCw size={16}/>, title: '7-Day Returns',       desc: 'Easy hassle-free returns within 7 days'   },
-  { icon: <FiShield size={16}/>,    title: '100% Authentic',      desc: 'Every product is vetted before listing'   },
-  { icon: <FiPackage size={16}/>,   title: 'Secure Packaging',    desc: 'Orders packed carefully to arrive intact' },
+  { icon: <FiTruck size={16}/>,   title: 'Nationwide Delivery', desc: 'Delivery fee calculated by your location' },
+  { icon: <FiShield size={16}/>,  title: '100% Authentic',      desc: 'Every product is vetted before listing'   },
+  { icon: <FiPackage size={16}/>, title: 'Secure Packaging',    desc: 'Orders packed carefully to arrive intact' },
+  { icon: <FiPackage size={16}/>, title: 'All Sales Final',     desc: 'No returns or exchanges accepted'          },
 ]
 
 function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
@@ -582,10 +582,9 @@ export default function ProductDetailPage() {
             <AccordionItem title="Delivery & Returns">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 {[
-                  { title: 'Lagos Delivery',      desc: '1–2 business days · ₦1,500'                                              },
-                  { title: 'Nationwide Delivery',  desc: '3–5 business days · ₦2,500–₦3,500'                                      },
-                  { title: 'Free Delivery',        desc: 'On all orders above ₦50,000'                                             },
-                  { title: 'Returns Policy',       desc: 'Items can be returned within 7 days if unused and in original packaging.' },
+                  { title: 'Delivery',        desc: 'Fee calculated by your location at checkout. Akwa Ibom from ₦1,000 · Nationwide from ₦1,500 – ₦5,500.' },
+                  { title: 'Delivery Time',   desc: 'Akwa Ibom: 1–2 days · South-South: 2–3 days · Other states: 3–5 business days' },
+                  { title: 'Returns Policy',  desc: 'All sales are final. No returns or exchanges are accepted. Please review your order carefully before purchase.' },
                 ].map(item => (
                   <div key={item.title}>
                     <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.78rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '2px' }}>{item.title}</p>

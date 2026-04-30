@@ -115,10 +115,10 @@ function useTestimonials() {
 }
 
 const perks = [
-  { icon: '🚚', title: 'Free Delivery',   desc: 'On all orders above ₦50,000 nationwide' },
-  { icon: '✅', title: '100% Authentic',  desc: 'Every product is carefully vetted for quality' },
-  { icon: '🔒', title: 'Secure Checkout', desc: 'Your payment info is always protected' },
-  { icon: '↩️', title: 'Easy Returns',    desc: 'Hassle-free returns within 7 days' },
+  { icon: '🚚', title: 'Nationwide Delivery', desc: 'Delivery fee calculated by your location' },
+  { icon: '✅', title: '100% Authentic',       desc: 'Every product is carefully vetted for quality' },
+  { icon: '🔒', title: 'Secure Checkout',      desc: 'Your payment info is always protected' },
+  { icon: '📦', title: 'All Sales Final',      desc: 'Please review your order carefully before purchase' },
 ]
 
 // ── Product Card ──────────────────────────────────────────────────────────────

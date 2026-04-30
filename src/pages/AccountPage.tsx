@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import type { CSSProperties, FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiUser, FiPackage, FiHeart, FiMapPin, FiLogOut, FiEdit2, FiChevronRight, FiCalendar, FiPhone, FiMail, FiShield, FiShoppingBag, FiCheck, FiPlus, FiTrash2, FiX } from 'react-icons/fi'
 import { useAuth } from '../store/authStore'
@@ -50,7 +51,7 @@ function AddressesTab() {
     setError(''); setShowForm(true)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setSaving(true); setError('')
     try {
@@ -77,8 +78,8 @@ function AddressesTab() {
     try { await authAPI.updateAddress(a.id, { is_default: true }); await load() } catch {}
   }
 
-  const inputStyle: React.CSSProperties = { width: '100%', padding: '0.65rem 0.9rem', fontFamily: '"Jost", sans-serif', fontSize: '0.82rem', border: '1.5px solid rgba(138,79,177,0.2)', borderRadius: '8px', outline: 'none', color: '#1A1A2E', background: '#FAF7FF', boxSizing: 'border-box' }
-  const labelStyle: React.CSSProperties = { fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.45)', display: 'block', marginBottom: '4px' }
+  const inputStyle: CSSProperties = { width: '100%', padding: '0.65rem 0.9rem', fontFamily: '"Jost", sans-serif', fontSize: '0.82rem', border: '1.5px solid rgba(138,79,177,0.2)', borderRadius: '8px', outline: 'none', color: '#1A1A2E', background: '#FAF7FF', boxSizing: 'border-box' }
+  const labelStyle: CSSProperties = { fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.45)', display: 'block', marginBottom: '4px' }
 
   return (
     <div style={{ maxWidth: '680px' }}>

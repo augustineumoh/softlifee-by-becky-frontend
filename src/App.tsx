@@ -19,6 +19,7 @@ import { useEffect } from 'react'
 import { useAuth } from './store/authStore'
 import AccountEditPage from './pages/AccountEditPage'
 import OrderDetailPage from './pages/OrderDetailPage'
+import ReturnPolicyPage from './pages/ReturnPolicyPage'
 
 
 
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="*"                              element={<NotFoundPage />} />
           <Route path="/account/edit"                 element={<AccountEditPage />} />
           <Route path="/account/orders/:orderNumber"  element={<OrderDetailPage />} />
+          <Route path="/returns-policy"               element={<ReturnPolicyPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
