@@ -186,8 +186,8 @@ export default function Footer() {
               ✓ You're in! Welcome to the Soft Lifee family 🌸
             </p>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: '0 1 420px', minWidth: '240px' }}>
-              <div className="ft-newsletter-form">
+            <div style={{ flex: '0 1 420px', minWidth: '240px' }}>
+              <div style={{ display: 'flex' }}>
                 <input
                   type="email"
                   placeholder="Your email address"
@@ -205,7 +205,7 @@ export default function Footer() {
                 </button>
               </div>
               {error && (
-                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', color: '#FFCDD2', margin: 0 }}>
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', color: '#FFCDD2', margin: '0.4rem 0 0' }}>
                   {error}
                 </p>
               )}
