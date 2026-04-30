@@ -61,20 +61,51 @@ const socials = [
   },
 ]
 
-function PaymentBadge({ label }: { label: string }) {
+function PaystackBadge() {
   return (
-    <div style={{
-      background: '#FFFFFF',
-      border: '1px solid rgba(138,79,177,0.15)',
-      borderRadius: '6px',
-      padding: '5px 10px',
-      fontFamily: '"Jost", sans-serif',
-      fontSize: '0.62rem',
-      fontWeight: 700,
-      color: '#5B21B6',
-      letterSpacing: '0.05em',
-      whiteSpace: 'nowrap',
-    }}>{label}</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', background: '#FFF', border: '1px solid rgba(0,195,247,0.35)', borderRadius: '6px', padding: '5px 10px' }}>
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+        <rect x="0" y="0"   width="13"   height="2.4" rx="1.2" fill="#00C3F7"/>
+        <rect x="0" y="3"   width="10.4" height="2.4" rx="1.2" fill="#00A8D5"/>
+        <rect x="0" y="6"   width="7.8"  height="2.4" rx="1.2" fill="#0091BA"/>
+        <rect x="0" y="9"   width="5.2"  height="2.4" rx="1.2" fill="#007AA0"/>
+        <rect x="0" y="12"  width="2.6"  height="1.2" rx="0.6" fill="#006487"/>
+      </svg>
+      <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, color: '#1A1A2E', letterSpacing: '0.03em' }}>paystack</span>
+    </div>
+  )
+}
+
+function MastercardBadge() {
+  return (
+    <div style={{ background: '#FFF', border: '1px solid rgba(138,79,177,0.15)', borderRadius: '6px', padding: '5px 8px', display: 'flex', alignItems: 'center' }}>
+      <svg width="30" height="18" viewBox="0 0 30 18" fill="none">
+        <defs>
+          <clipPath id="ft-mc-clip">
+            <circle cx="11" cy="9" r="8"/>
+          </clipPath>
+        </defs>
+        <circle cx="11" cy="9" r="8" fill="#EB001B"/>
+        <circle cx="19" cy="9" r="8" fill="#F79E1B"/>
+        <circle cx="19" cy="9" r="8" fill="#FF5F00" clipPath="url(#ft-mc-clip)"/>
+      </svg>
+    </div>
+  )
+}
+
+function VisaBadge() {
+  return (
+    <div style={{ background: '#1A1F71', borderRadius: '6px', padding: '5px 10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span style={{ fontFamily: '"Arial Black", "Helvetica Neue", sans-serif', fontSize: '0.72rem', fontWeight: 900, fontStyle: 'italic', color: '#FFFFFF', letterSpacing: '0.04em' }}>VISA</span>
+    </div>
+  )
+}
+
+function VerveBadge() {
+  return (
+    <div style={{ background: '#FFF', border: '1px solid rgba(227,30,36,0.25)', borderRadius: '6px', padding: '5px 10px', display: 'flex', alignItems: 'center' }}>
+      <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 800, color: '#E31E24', letterSpacing: '0.02em' }}>verve</span>
+    </div>
   )
 }
 
@@ -261,9 +292,10 @@ export default function Footer() {
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
             <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 500, color: '#8A4FB1', letterSpacing: '0.05em' }}>Secured by</span>
-            {['Paystack', 'Visa', 'Mastercard', 'Verve'].map(p => (
-              <PaymentBadge key={p} label={p} />
-            ))}
+            <PaystackBadge />
+            <MastercardBadge />
+            <VisaBadge />
+            <VerveBadge />
           </div>
         </div>
       </div>
