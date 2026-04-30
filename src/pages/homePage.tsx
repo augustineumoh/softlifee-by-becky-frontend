@@ -115,7 +115,7 @@ function useTestimonials() {
 }
 
 const perks = [
-  { icon: '🚚', title: 'Nationwide Delivery', desc: 'Delivery fee calculated by your location' },
+  { icon: '🚚', title: 'Free Delivery',        desc: 'Free on orders above ₦100,000 · otherwise by location' },
   { icon: '✅', title: '100% Authentic',       desc: 'Every product is carefully vetted for quality' },
   { icon: '🔒', title: 'Secure Checkout',      desc: 'Your payment info is always protected' },
   { icon: '📦', title: 'All Sales Final',      desc: 'Please review your order carefully before purchase' },

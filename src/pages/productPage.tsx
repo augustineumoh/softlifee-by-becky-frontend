@@ -582,7 +582,7 @@ export default function ProductDetailPage() {
             <AccordionItem title="Delivery & Returns">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 {[
-                  { title: 'Delivery',        desc: 'Fee calculated by your location at checkout. Akwa Ibom from ₦1,000 · Nationwide from ₦1,500 – ₦5,500.' },
+                  { title: 'Delivery',        desc: 'Free on orders above ₦100,000. Otherwise fee calculated by state: Akwa Ibom from ₦1,000 · Nationwide ₦1,500 – ₦5,500.' },
                   { title: 'Delivery Time',   desc: 'Akwa Ibom: 1–2 days · South-South: 2–3 days · Other states: 3–5 business days' },
                   { title: 'Returns Policy',  desc: 'All sales are final. No returns or exchanges are accepted. Please review your order carefully before purchase.' },
                 ].map(item => (

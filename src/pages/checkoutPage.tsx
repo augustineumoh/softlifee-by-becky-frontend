@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { FiCheck, FiTruck, FiCreditCard, FiShoppingBag, FiTag, FiAlertCircle } from 'react-icons/fi'
+import { FiCheck, FiTruck, FiCreditCard, FiShoppingBag, FiTag, FiAlertCircle, FiMapPin } from 'react-icons/fi'
 import { useCart } from '../store/cartStore'
 import { useAuth } from '../store/authStore'
 import { useCreateOrder } from '../hooks/useOrders'
 import { useDiscount } from '../hooks/useOrders'
+import { authAPI } from '../services/api'
+import type { Address } from '../services/api'
 
 const formatPrice = (n: number) => '₦' + n.toLocaleString('en-NG')
 
@@ -38,8 +40,10 @@ const DELIVERY_RATES: Record<string, number> = {
   'Katsina': 5000, 'Kebbi': 5000, 'Sokoto': 5500, 'Zamfara': 5000,
 }
 const DEFAULT_DELIVERY = 3500
+const FREE_THRESHOLD   = 100000
 
-function getDeliveryFee(state: string): number {
+function getDeliveryFee(state: string, subtotal: number): number {
+  if (subtotal >= FREE_THRESHOLD) return 0
   return DELIVERY_RATES[state] ?? DEFAULT_DELIVERY
 }
 
@@ -52,8 +56,10 @@ export default function CheckoutPage() {
   const { createOrder, loading: orderLoading, error: orderError } = useCreateOrder()
   const { validate: validateDiscount, clear: clearDiscount, discount, loading: discountLoading, error: discountError, appliedCode } = useDiscount()
 
-  const [step, setStep] = useState(0)
+  const [step, setStep]   = useState(0)
   const [discountInput, setDiscountInput] = useState('')
+  const [savedAddresses, setSavedAddresses]     = useState<Address[]>([])
+  const [selectedSavedId, setSelectedSavedId]   = useState<number | null>(null)
 
   const [delivery, setDelivery] = useState({
     full_name: user?.full_name || '',
@@ -72,12 +78,22 @@ export default function CheckoutPage() {
   }, [items])
 
   useEffect(() => {
-    if (user) setDelivery(d => ({ ...d, full_name: user.full_name || '', email: user.email || '', phone: user.phone || '' }))
+    if (!user) return
+    setDelivery(d => ({ ...d, full_name: user.full_name || '', email: user.email || '', phone: user.phone || '' }))
+    authAPI.getAddresses().then(data => {
+      const list: Address[] = Array.isArray(data) ? data : (data as any)?.results ?? []
+      setSavedAddresses(list)
+      const def = list.find(a => a.is_default) || list[0]
+      if (def) {
+        setSelectedSavedId(def.id)
+        setDelivery(d => ({ ...d, full_name: def.full_name || d.full_name, phone: def.phone || d.phone, address: def.address, city: def.city, state: def.state }))
+      }
+    }).catch(() => {})
   }, [user])
 
   const subtotal     = items.reduce((s, i) => s + i.price * i.quantity, 0)
   const discountAmt  = discount ? Number(discount.discount_amount) : 0
-  const deliveryFee  = getDeliveryFee(delivery.state)
+  const deliveryFee  = getDeliveryFee(delivery.state, subtotal - discountAmt)
   const total        = subtotal - discountAmt + deliveryFee
 
   const updateDelivery = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -175,6 +191,44 @@ export default function CheckoutPage() {
                   <FiTruck size={18} color="#8A4FB1" />
                   <h2 style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#1A1A2E', margin: 0 }}>Delivery Information</h2>
                 </div>
+
+                {/* Saved address picker */}
+                {savedAddresses.length > 0 && (
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.4)', marginBottom: '0.75rem' }}>Your Saved Addresses</p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                      {savedAddresses.map(addr => (
+                        <button key={addr.id} onClick={() => {
+                          setSelectedSavedId(addr.id)
+                          setDelivery(d => ({ ...d, full_name: addr.full_name, phone: addr.phone, address: addr.address, city: addr.city, state: addr.state }))
+                        }} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '0.85rem 1rem', border: `2px solid ${selectedSavedId === addr.id ? '#8A4FB1' : 'rgba(138,79,177,0.15)'}`, borderRadius: '10px', background: selectedSavedId === addr.id ? '#F3E8FF' : '#FFF', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s', width: '100%' }}>
+                          <div style={{ width: '18px', height: '18px', borderRadius: '50%', border: `2px solid ${selectedSavedId === addr.id ? '#8A4FB1' : 'rgba(138,79,177,0.3)'}`, background: selectedSavedId === addr.id ? '#8A4FB1' : 'transparent', flexShrink: 0, marginTop: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {selectedSavedId === addr.id && <FiCheck size={10} color="#FFF" />}
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
+                              <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.8rem', fontWeight: 700, color: '#1A1A2E' }}>{addr.label}</span>
+                              {addr.is_default && <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.48rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', background: '#8A4FB1', color: '#FFF', padding: '2px 6px', borderRadius: '100px' }}>Default</span>}
+                            </div>
+                            <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.75rem', fontWeight: 500, color: '#1A1A2E', margin: '0 0 1px' }}>{addr.full_name} · {addr.phone}</p>
+                            <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', color: 'rgba(26,26,46,0.45)', margin: 0 }}>{addr.address}, {addr.city}, {addr.state}</p>
+                          </div>
+                          <FiMapPin size={14} color={selectedSavedId === addr.id ? '#8A4FB1' : 'rgba(138,79,177,0.3)'} style={{ flexShrink: 0, marginTop: '2px' }} />
+                        </button>
+                      ))}
+                      <button onClick={() => {
+                        setSelectedSavedId(null)
+                        setDelivery(d => ({ ...d, address: '', city: '', state: '' }))
+                      }} style={{ padding: '0.65rem 1rem', background: 'none', border: '1.5px dashed rgba(138,79,177,0.25)', borderRadius: '10px', fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8A4FB1', cursor: 'pointer' }}>
+                        + Use a different address
+                      </button>
+                    </div>
+                    <div style={{ height: '1px', background: 'rgba(138,79,177,0.08)', margin: '1.5rem 0' }} />
+                    <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(26,26,46,0.38)', margin: '0 0 1rem' }}>
+                      {selectedSavedId ? 'Edit details if needed' : 'Enter new delivery address'}
+                    </p>
+                  </div>
+                )}
 
                 <div style={{ display: 'grid', gap: '1rem' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -415,7 +469,14 @@ export default function CheckoutPage() {
               {!delivery.state && (
                 <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#FAF7FF', borderRadius: '8px', border: '1px solid rgba(138,79,177,0.1)' }}>
                   <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', color: '#5B21B6', margin: 0, lineHeight: 1.5 }}>
-                    🚚 Delivery fee will be calculated once you select your state.
+                    🚚 Delivery fee shown once you select your state.
+                  </p>
+                </div>
+              )}
+              {delivery.state && deliveryFee > 0 && subtotal - discountAmt < FREE_THRESHOLD && (
+                <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#FAF7FF', borderRadius: '8px', border: '1px solid rgba(138,79,177,0.1)' }}>
+                  <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', color: '#5B21B6', margin: 0, lineHeight: 1.5 }}>
+                    🎁 Add <strong style={{ color: '#8A4FB1' }}>{formatPrice(FREE_THRESHOLD - (subtotal - discountAmt))}</strong> more for free delivery!
                   </p>
                 </div>
               )}

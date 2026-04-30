@@ -15,7 +15,7 @@ const faqs = [
       },
       {
         q: 'Do you offer free delivery?',
-        a: 'We do not currently offer free delivery. All orders are subject to a delivery fee calculated by your state/location at checkout.',
+        a: 'Yes! Orders above ₦100,000 qualify for free delivery nationwide. For orders below ₦100,000, a delivery fee applies based on your state/location.',
       },
       {
         q: 'Can I track my order?',
