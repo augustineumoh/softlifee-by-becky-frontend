@@ -67,7 +67,7 @@ function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <Link to={`/product/${product.slug}`} style={{ textDecoration: 'none' }}
+    <Link to={`/product/${product.slug}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column' }}
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
       <div style={{ background: '#FFFFFF', borderRadius: '14px', overflow: 'hidden', border: `1px solid ${hovered ? '#8A4FB1' : 'rgba(138,79,177,0.1)'}`, transition: 'all 0.3s', boxShadow: hovered ? '0 12px 40px rgba(138,79,177,0.14)' : '0 2px 8px rgba(138,79,177,0.04)', transform: hovered ? 'translateY(-4px)' : 'none', position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
 
@@ -501,7 +501,7 @@ export default function ShopPage() {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
           gap: clamp(0.75rem, 2vw, 1.75rem);
-          align-items: start;
+          align-items: stretch;
         }
 
         @media (max-width: 640px) {
