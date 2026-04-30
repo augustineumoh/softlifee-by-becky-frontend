@@ -23,7 +23,7 @@ const faqs = [
       },
       {
         q: 'Do you deliver outside Nigeria?',
-        a: 'At this time we only deliver within Nigeria. International shipping is not available.',
+        a: 'Yes! We deliver nationwide across all 36 states in Nigeria, and we also ship internationally. Contact us via WhatsApp or email for international shipping rates and timelines before placing your order.',
       },
     ],
   },

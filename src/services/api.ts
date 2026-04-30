@@ -633,6 +633,18 @@ export const returnsAPI = {
     request<ReturnRequest>(`/orders/returns/${id}/`, {}, true),
 }
 
+// ── Newsletter API ────────────────────────────────────────────────────────────
+export const newsletterAPI = {
+  subscribe: (email: string, name?: string) =>
+    request<{ detail: string }>('/newsletter/subscribe/', {
+      method: 'POST',
+      body:   JSON.stringify({ email, name: name ?? '' }),
+    }),
+
+  unsubscribe: (token: string) =>
+    request<{ detail: string }>(`/newsletter/unsubscribe/${token}/`, { method: 'GET' }),
+}
+
 // ── Referral API ──────────────────────────────────────────────────────────────
 export const referralAPI = {
   getInfo: () =>

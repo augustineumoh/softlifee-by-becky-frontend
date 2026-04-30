@@ -21,6 +21,7 @@ import AccountEditPage from './pages/AccountEditPage'
 import OrderDetailPage from './pages/OrderDetailPage'
 import ReturnPolicyPage from './pages/ReturnPolicyPage'
 import FAQPage from './pages/FAQPage'
+import UnsubscribePage from './pages/UnsubscribePage'
 
 
 
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="/account/orders/:orderNumber"  element={<OrderDetailPage />} />
           <Route path="/returns-policy"               element={<ReturnPolicyPage />} />
           <Route path="/faqs"                         element={<FAQPage />} />
+          <Route path="/unsubscribe"                  element={<UnsubscribePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

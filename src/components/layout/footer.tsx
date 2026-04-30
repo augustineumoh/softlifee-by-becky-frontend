@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { newsletterAPI } from '../../services/api'
 
 const quickLinks = [
   { label: 'New Arrivals',        to: '/new-arrivals' },
@@ -15,7 +16,7 @@ const helpLinks = [
   { label: 'About Us',         to: '/about' },
   { label: 'Contact Us',       to: '/contact' },
   { label: 'FAQs',             to: '/faqs' },
-  { label: 'Track Your Order', to: '/account/orders' },
+  { label: 'Track Your Order', to: '/account' },
   { label: 'Returns Policy',   to: '/returns-policy' },
   { label: 'Privacy Policy',   to: '/privacy-policy' },
 ]
@@ -144,6 +145,27 @@ function AccordionSection({ title, children }: { title: string; children: React.
 export default function Footer() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSubscribe() {
+    if (!email) return
+    setLoading(true)
+    setError('')
+    try {
+      await newsletterAPI.subscribe(email)
+      setSubmitted(true)
+    } catch (err: any) {
+      const msg = err?.detail || err?.message || 'Something went wrong. Please try again.'
+      if (msg.toLowerCase().includes('already subscribed')) {
+        setSubmitted(true)
+      } else {
+        setError(msg)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <footer style={{ background: 'linear-gradient(180deg, #F3E8FF 0%, #FAF7FF 40%, #FFFFFF 100%)', borderTop: '1px solid rgba(138,79,177,0.12)' }}>
@@ -164,21 +186,29 @@ export default function Footer() {
               ✓ You're in! Welcome to the Soft Lifee family 🌸
             </p>
           ) : (
-            <div className="ft-newsletter-form">
-              <input
-                type="email"
-                placeholder="Your email address"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && email && setSubmitted(true)}
-                style={{ flex: 1, padding: '0.9rem 1.2rem', fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', border: 'none', outline: 'none', background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', borderRadius: '2px 0 0 2px', minWidth: 0 }}
-              />
-              <button onClick={() => email && setSubmitted(true)}
-                style={{ padding: '0.9rem 1.4rem', fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', background: '#FFFFFF', color: '#5B21B6', border: 'none', cursor: 'pointer', borderRadius: '0 2px 2px 0', whiteSpace: 'nowrap', transition: 'background 0.25s', flexShrink: 0 }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#E8D5F5' }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF' }}>
-                Subscribe
-              </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: '0 1 420px', minWidth: '240px' }}>
+              <div className="ft-newsletter-form">
+                <input
+                  type="email"
+                  placeholder="Your email address"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSubscribe()}
+                  disabled={loading}
+                  style={{ flex: 1, padding: '0.9rem 1.2rem', fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', border: 'none', outline: 'none', background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', borderRadius: '2px 0 0 2px', minWidth: 0 }}
+                />
+                <button onClick={handleSubscribe} disabled={loading || !email}
+                  style={{ padding: '0.9rem 1.4rem', fontFamily: '"Jost", sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', background: '#FFFFFF', color: '#5B21B6', border: 'none', cursor: loading ? 'wait' : 'pointer', borderRadius: '0 2px 2px 0', whiteSpace: 'nowrap', transition: 'background 0.25s', flexShrink: 0, opacity: loading ? 0.7 : 1 }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#E8D5F5' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF' }}>
+                  {loading ? '…' : 'Subscribe'}
+                </button>
+              </div>
+              {error && (
+                <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.72rem', color: '#FFCDD2', margin: 0 }}>
+                  {error}
+                </p>
+              )}
             </div>
           )}
         </div>
