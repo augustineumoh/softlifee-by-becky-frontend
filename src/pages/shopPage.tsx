@@ -509,7 +509,6 @@ export default function ShopPage() {
             grid-template-columns: repeat(2, 1fr);
             gap: 0.6rem;
           }
-          .sl-mobile-add-btn { display: flex !important; }
         }
 
         @media (max-width: 400px) {

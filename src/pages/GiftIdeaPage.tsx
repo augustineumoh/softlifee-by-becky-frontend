@@ -188,7 +188,7 @@ function MiniCard({ product }: { product: typeof giftProducts['her'][0] }) {
               {product.badge}
             </div>
           )}
-          <div className="gi-add-hover" onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.88)', backdropFilter: 'blur(4px)', padding: '0.65rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
+          <div onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.88)', backdropFilter: 'blur(4px)', padding: '0.65rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF' }}>{adding ? '✓ Added!' : 'Add to Cart'}</span>
           </div>
@@ -200,12 +200,6 @@ function MiniCard({ product }: { product: typeof giftProducts['her'][0] }) {
             <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', fontWeight: 700, color: '#8A4FB1' }}>{formatPrice(product.price)}</p>
           </div>
         </Link>
-        {/* Mobile: always-visible add button */}
-        <button className="gi-add-mobile" onClick={handleAdd}
-          style={{ display: 'none', width: '100%', padding: '0.6rem', margin: '0 0 0.75rem', background: adding ? '#16A34A' : '#8A4FB1', color: '#FFF', border: 'none', cursor: 'pointer', fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', transition: 'background 0.25s', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          {adding ? '✓ Added!' : 'Add to Cart'}
-        </button>
       </div>
     </div>
   )
@@ -396,14 +390,10 @@ export default function GiftIdeasPage() {
 
       <style>{`
         @media (max-width: 640px) {
-          /* 2-column gift card grid on mobile */
           .gi-product-grid {
             grid-template-columns: repeat(2, 1fr) !important;
             gap: 0.75rem !important;
           }
-          /* Hide hover overlay, show mobile button */
-          .gi-add-hover  { display: none !important; }
-          .gi-add-mobile { display: flex !important; }
         }
       `}</style>
     </div>

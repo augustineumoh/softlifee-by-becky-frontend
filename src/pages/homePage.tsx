@@ -458,9 +458,6 @@ export default function HomePage() {
         @keyframes sl-slideInR { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
 
         @media (max-width: 640px) {
-          /* Mobile add button */
-          .hp-add-hover  { display: none !important; }
-          .hp-add-mobile { display: block !important; }
 
           /* Brand story: single column */
           section[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
