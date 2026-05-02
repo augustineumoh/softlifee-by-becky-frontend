@@ -68,7 +68,7 @@ export default function Navbar() {
   // Search
   const { query, setQuery, results, loading: searchLoading } = useSearch()
 
-  const lightHeroPages = ['/about', '/gift-ideas', '/order-success', '/login', '/register', '/product', '/shop','/cart','/checkout','/*', '/account']
+  const lightHeroPages = ['/about', '/gift-ideas', '/order-success', '/login', '/register', '/product', '/shop','/cart','/checkout','/*', '/account','/faq','/returns-policy']
   const hasLightHero   = lightHeroPages.some(p => pathname.startsWith(p))
 
   useEffect(() => {

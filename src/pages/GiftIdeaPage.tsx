@@ -175,13 +175,12 @@ function MiniCard({ product }: { product: typeof giftProducts['her'][0] }) {
   }
 
   return (
-    <Link
-      to={`/product/${product.slug}`}
-      style={{ textDecoration: 'none' }}
+    <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <div style={{ background: '#FFFFFF', borderRadius: '8px', overflow: 'hidden', border: `1px solid ${hovered ? '#8A4FB1' : 'rgba(138,79,177,0.1)'}`, transition: 'all 0.25s', boxShadow: hovered ? '0 8px 32px rgba(138,79,177,0.14)' : 'none' }}>
+        {/* Image area — not wrapped in Link so add-to-cart click doesn't navigate */}
         <div style={{ position: 'relative', height: '200px', overflow: 'hidden', background: '#F0E8FA' }}>
           <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.55s ease', transform: hovered ? 'scale(1.07)' : 'scale(1)' }} />
           {product.badge && (
@@ -189,17 +188,20 @@ function MiniCard({ product }: { product: typeof giftProducts['her'][0] }) {
               {product.badge}
             </div>
           )}
-          <div onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.88)', backdropFilter: 'blur(4px)', padding: '0.65rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
+          <div onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.88)', backdropFilter: 'blur(4px)', padding: '0.65rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF' }}>{adding ? '✓ Added!' : 'Add to Cart'}</span>
           </div>
         </div>
-        <div style={{ padding: '0.9rem' }}>
-          <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1rem', fontWeight: 600, color: '#1A1A2E', lineHeight: 1.2, marginBottom: '4px' }}>{product.name}</p>
-          <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', fontWeight: 700, color: '#8A4FB1' }}>{formatPrice(product.price)}</p>
-        </div>
+        {/* Text — Link only here so clicking the name/price navigates */}
+        <Link to={`/product/${product.slug}`} style={{ textDecoration: 'none', display: 'block' }}>
+          <div style={{ padding: '0.9rem' }}>
+            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1rem', fontWeight: 600, color: '#1A1A2E', lineHeight: 1.2, marginBottom: '4px' }}>{product.name}</p>
+            <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', fontWeight: 700, color: '#8A4FB1' }}>{formatPrice(product.price)}</p>
+          </div>
+        </Link>
       </div>
-    </Link>
+    </div>
   )
 }
 

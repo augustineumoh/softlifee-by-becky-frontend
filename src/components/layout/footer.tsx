@@ -171,7 +171,7 @@ export default function Footer() {
     <footer style={{ background: 'linear-gradient(180deg, #F3E8FF 0%, #FAF7FF 40%, #FFFFFF 100%)', borderTop: '1px solid rgba(138,79,177,0.12)' }}>
 
       {/* ── NEWSLETTER BAND ── */}
-      <div style={{ background: 'linear-gradient(135deg, #8A4FB1 0%, #5B21B6 100%)', padding: 'clamp(2rem,5vw,3.5rem) clamp(1.25rem,6vw,5rem)' }}>
+      <div className="ft-newsletter-band" style={{ background: 'linear-gradient(135deg, #8A4FB1 0%, #5B21B6 100%)', padding: 'clamp(2rem,5vw,3.5rem) clamp(1.25rem,6vw,5rem)' }}>
         <div className="ft-newsletter">
           <div className="ft-newsletter-text">
             <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: '0.5rem' }}>
@@ -374,8 +374,13 @@ export default function Footer() {
         .ft-contact .ft-section-title { display: block; }
 
         @media (max-width: 768px) {
-          /* Newsletter stacks vertically */
-          .ft-newsletter { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+          /* Newsletter band — compact on mobile */
+          .ft-newsletter-band { padding: 1.25rem clamp(1.25rem,5vw,2rem) !important; }
+          .ft-newsletter { flex-direction: column; align-items: flex-start; gap: 0.85rem; }
+          .ft-newsletter-text p { font-size: 0.55rem !important; margin-bottom: 0.2rem !important; }
+          .ft-newsletter-text h3 { font-size: 1.15rem !important; }
+          .ft-newsletter-band input { padding: 0.65rem 0.9rem !important; font-size: 0.8rem !important; }
+          .ft-newsletter-band button { padding: 0.65rem 1rem !important; font-size: 0.65rem !important; }
           .ft-newsletter-form { min-width: 0; width: 100%; flex: unset; }
 
           /* Grid: single column */
