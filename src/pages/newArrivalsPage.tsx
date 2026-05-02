@@ -227,7 +227,7 @@ function ProductCard({ product, delay = 0, rank }: { product: typeof allProducts
           </button>
 
           {/* Add to cart */}
-          <div onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.93)', backdropFilter: 'blur(4px)', padding: '0.8rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}>
+          <div className="na-add-hover" onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.93)', backdropFilter: 'blur(4px)', padding: '0.8rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#FFF' }}>{adding ? '✓ Added!' : 'Add to Cart'}</span>
           </div>
@@ -241,6 +241,12 @@ function ProductCard({ product, delay = 0, rank }: { product: typeof allProducts
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.05rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '4px', lineHeight: 1.2 }}>{product.name}</p>
           <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.88rem', fontWeight: 700, color: '#8A4FB1' }}>{formatPrice(product.price)}</p>
         </Link>
+        {/* Mobile: always-visible add button */}
+        <button className="na-add-mobile" onClick={handleAdd}
+          style={{ display: 'none', width: '100%', marginTop: '0.5rem', padding: '0.65rem', background: adding ? '#16A34A' : '#8A4FB1', color: '#FFF', border: 'none', cursor: 'pointer', fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', borderRadius: '3px', transition: 'background 0.25s', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          {adding ? '✓ Added!' : 'Add to Cart'}
+        </button>
       </div>
     </div>
   )
@@ -503,7 +509,7 @@ export default function NewArrivalsPage() {
             <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.82rem', color: '#5B21B6' }}>Check back soon — we drop new products every week!</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '2rem 1.5rem' }}>
+          <div className="na-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '2rem 1.5rem' }}>
             {filtered.map((p, i) => <ProductCard key={p.id} product={p} delay={Math.min(i * 0.04, 0.5)} rank={i + 1} />)}
           </div>
         )}
@@ -512,6 +518,13 @@ export default function NewArrivalsPage() {
       <style>{`
         @keyframes na-pulse   { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.85); } }
         @keyframes na-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @media (max-width: 640px) {
+          /* 2-column grid on mobile */
+          .na-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 1rem 0.75rem !important; }
+          /* Hide hover overlay, show mobile button */
+          .na-add-hover  { display: none !important; }
+          .na-add-mobile { display: flex !important; }
+        }
         @media (max-width: 768px) {
           div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
         }

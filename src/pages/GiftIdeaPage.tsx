@@ -181,25 +181,31 @@ function MiniCard({ product }: { product: typeof giftProducts['her'][0] }) {
     >
       <div style={{ background: '#FFFFFF', borderRadius: '8px', overflow: 'hidden', border: `1px solid ${hovered ? '#8A4FB1' : 'rgba(138,79,177,0.1)'}`, transition: 'all 0.25s', boxShadow: hovered ? '0 8px 32px rgba(138,79,177,0.14)' : 'none' }}>
         {/* Image area — not wrapped in Link so add-to-cart click doesn't navigate */}
-        <div style={{ position: 'relative', height: '200px', overflow: 'hidden', background: '#F0E8FA' }}>
+        <div style={{ position: 'relative', aspectRatio: '3/4', overflow: 'hidden', background: '#F0E8FA' }}>
           <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.55s ease', transform: hovered ? 'scale(1.07)' : 'scale(1)' }} />
           {product.badge && (
             <div style={{ position: 'absolute', top: '10px', left: '10px', background: bc.bg, color: bc.text, fontFamily: '"Jost", sans-serif', fontSize: '0.5rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', padding: '3px 9px', borderRadius: '100px' }}>
               {product.badge}
             </div>
           )}
-          <div onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.88)', backdropFilter: 'blur(4px)', padding: '0.65rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
+          <div className="gi-add-hover" onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.88)', backdropFilter: 'blur(4px)', padding: '0.65rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF' }}>{adding ? '✓ Added!' : 'Add to Cart'}</span>
           </div>
         </div>
         {/* Text — Link only here so clicking the name/price navigates */}
         <Link to={`/product/${product.slug}`} style={{ textDecoration: 'none', display: 'block' }}>
-          <div style={{ padding: '0.9rem' }}>
-            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1rem', fontWeight: 600, color: '#1A1A2E', lineHeight: 1.2, marginBottom: '4px' }}>{product.name}</p>
+          <div style={{ padding: '0.75rem 0.9rem 0.5rem' }}>
+            <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1rem', fontWeight: 600, color: '#1A1A2E', lineHeight: 1.2, marginBottom: '3px' }}>{product.name}</p>
             <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.85rem', fontWeight: 700, color: '#8A4FB1' }}>{formatPrice(product.price)}</p>
           </div>
         </Link>
+        {/* Mobile: always-visible add button */}
+        <button className="gi-add-mobile" onClick={handleAdd}
+          style={{ display: 'none', width: '100%', padding: '0.6rem', margin: '0 0 0.75rem', background: adding ? '#16A34A' : '#8A4FB1', color: '#FFF', border: 'none', cursor: 'pointer', fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', transition: 'background 0.25s', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          {adding ? '✓ Added!' : 'Add to Cart'}
+        </button>
       </div>
     </div>
   )
@@ -234,7 +240,7 @@ function GiftSection({ cat, index }: { cat: typeof giftCategories[0]; index: num
         {/* Accent line */}
         <div style={{ height: '2px', background: `linear-gradient(to right, ${cat.color}, transparent)`, marginBottom: '2.5rem', borderRadius: '1px' }} />
         {/* Products */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem' }}>
+        <div className="gi-product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1.5rem' }}>
           {products.map((p, i) => (
             <div key={`${p.slug}-${i}`} style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', transition: `opacity 0.5s ease ${i * 0.05}s, transform 0.5s ease ${i * 0.05}s` }}>
               <MiniCard product={p} />
@@ -387,6 +393,19 @@ export default function GiftIdeasPage() {
           </Link>
         </div>
       </section>
+
+      <style>{`
+        @media (max-width: 640px) {
+          /* 2-column gift card grid on mobile */
+          .gi-product-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem !important;
+          }
+          /* Hide hover overlay, show mobile button */
+          .gi-add-hover  { display: none !important; }
+          .gi-add-mobile { display: flex !important; }
+        }
+      `}</style>
     </div>
   )
 }
