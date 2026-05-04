@@ -353,6 +353,7 @@ export interface Product {
   review_count:    number
   in_stock:        boolean
   is_new:          boolean
+  added_date?:     string
 }
 
 export interface ColorVariant {

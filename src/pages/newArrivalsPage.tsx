@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { useProducts } from '../hooks/useProducts'
+import { getCloudinaryUrl } from '../services/api'
 import totebag from '../assets/tote bag.jpg'
 import diffuser from '../assets/diffuser.jpg'
 import mask from '../assets/stick mask.jpg'
@@ -57,6 +59,18 @@ import { FaArrowRight } from "react-icons/fa";
 import { useCart } from '../store/cartStore'
 
 const formatPrice = (n: number) => '₦' + n.toLocaleString('en-NG')
+
+export interface NewArrivalItem {
+  id:         number
+  name:       string
+  category:   string
+  subcategory?: string
+  price:      number
+  badge:      string
+  image:      string
+  slug:       string
+  addedDate:  string
+}
 
 // ── IMPORTANT: addedDate is the real date this product was added ───────────────
 // Format: 'YYYY-MM-DD' — products auto-expire after 3 weeks (21 days)
@@ -128,17 +142,14 @@ function isStillNew(addedDate: string): boolean {
   return (now - added) <= THREE_WEEKS_MS
 }
 
-// ── Exported helpers for HomePage auto-update ────────────────────────────────
-export const getNewArrivals = (count = 4) =>
-  allProducts
-    .filter(p => p.badge === 'New' && isStillNew(p.addedDate))
-    .sort((a, b) => new Date(b.addedDate).getTime() - new Date(a.addedDate).getTime())
-    .slice(0, count)
+// ── Exported helpers (kept for backward compat; home page uses useNewArrivals hook) ──
+export const getNewArrivals = (count = 4): NewArrivalItem[] =>
+  staticNewArrivals.slice(0, count)
 
 export { allProducts }
 
-// ── Internal: all valid new arrivals ────────────────────────────────────────
-const newArrivals = allProducts
+// ── Static fallback (shown while API loads) ──────────────────────────────────
+const staticNewArrivals: NewArrivalItem[] = allProducts
   .filter(p => p.badge === 'New' && isStillNew(p.addedDate))
   .sort((a, b) => new Date(b.addedDate).getTime() - new Date(a.addedDate).getTime())
 
@@ -184,7 +195,7 @@ function useInView(threshold = 0.1) {
 }
 
 // ── Product Card ─────────────────────────────────────────────────────────────
-function ProductCard({ product, delay = 0, rank }: { product: typeof allProducts[0]; delay?: number; rank?: number }) {
+function ProductCard({ product, delay = 0, rank }: { product: NewArrivalItem; delay?: number; rank?: number }) {
   const [hovered, setHovered]       = useState(false)
   const [wishlisted, setWishlisted] = useState(false)
   const [adding, setAdding]         = useState(false)
@@ -277,7 +288,7 @@ function MarqueeStrip() {
 }
 
 // ── Featured hero card ────────────────────────────────────────────────────────
-function FeaturedCard({ product }: { product: typeof allProducts[0] }) {
+function FeaturedCard({ product }: { product: NewArrivalItem }) {
   const [hovered, setHovered] = useState(false)
   return (
     <Link to={`/product/${product.slug}`}
@@ -304,7 +315,7 @@ function FeaturedCard({ product }: { product: typeof allProducts[0] }) {
 
 
 // ── Spotlight Card — big image card for secondary drops ───────────────────────
-function SpotlightCard({ product, rank, left }: { product: typeof allProducts[0]; rank: number; left: number }) {
+function SpotlightCard({ product, rank, left }: { product: NewArrivalItem; rank: number; left: number }) {
   const [hovered, setHovered] = useState(false)
   return (
     <Link to={`/product/${product.slug}`}
@@ -348,7 +359,28 @@ function SpotlightCard({ product, rank, left }: { product: typeof allProducts[0]
 export default function NewArrivalsPage() {
   const { d, h, m, s } = useCountdown()
   const [activeFilter, setActiveFilter] = useState('All')
-  const filters = ['All', 'Home Essentials', 'Skincare', 'Accessories', "Personal Essentials"]
+
+  // Fetch live products from the API (badge=new, added within 21 days)
+  const { products: apiProducts, loading } = useProducts({ new_arrivals: true })
+
+  // Map API products to the component shape and sort newest first
+  const newArrivals: NewArrivalItem[] = apiProducts.length > 0
+    ? apiProducts.map(p => ({
+        id:         p.id,
+        name:       p.name,
+        category:   typeof p.category === 'string' ? p.category : (p.category as { name: string }).name,
+        subcategory: typeof p.subcategory === 'string' ? p.subcategory ?? '' : (p.subcategory as { slug: string } | null)?.slug ?? '',
+        price:      parseFloat(p.active_price),
+        badge:      p.badge_display,
+        image:      getCloudinaryUrl(p.primary_image?.image ?? null, 600),
+        slug:       p.slug,
+        addedDate:  p.added_date ?? new Date().toISOString().split('T')[0],
+      })).sort((a, b) => new Date(b.addedDate).getTime() - new Date(a.addedDate).getTime())
+    : staticNewArrivals  // static fallback while loading
+
+  // Build category filter tabs from actual data
+  const categories = Array.from(new Set(newArrivals.map(p => p.category)))
+  const filters = ['All', ...categories]
 
   const filtered = activeFilter === 'All'
     ? newArrivals
@@ -357,7 +389,7 @@ export default function NewArrivalsPage() {
   const featured  = newArrivals[0]
   const secondary = newArrivals.slice(1, 4)
 
-  if (newArrivals.length === 0) {
+  if (!loading && newArrivals.length === 0) {
     return (
       <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(180deg, #FAF7FF, #F3E8FF)', padding: '4rem 2rem', textAlign: 'center' }}>
         <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '3rem', fontStyle: 'italic', color: '#8A4FB1', marginBottom: '1rem' }}>Coming Soon</p>

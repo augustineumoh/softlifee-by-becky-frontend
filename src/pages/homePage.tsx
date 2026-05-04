@@ -21,7 +21,8 @@ import becky from '../assets/home page.jpeg'
 import storagebasket from '../assets/storage basket.jpeg'
 import pimplepatches from '../assets/pimple patches.jpg'
 import laptopstand from '../assets/laptop stand.jpg'
-import { getNewArrivals } from './newArrivalsPage'
+import { useNewArrivals } from '../hooks/useProducts'
+import { getCloudinaryUrl } from '../services/api'
 import { FaArrowRight } from "react-icons/fa";
 
 
@@ -70,8 +71,6 @@ const bestSellers = [
   { id: 11, name: 'Star Pimple Patches', category: 'Skincare',        price: 1300,  badge: 'Trending',   image: pimplepatches,    slug: 'star-pimple-patches' },
   { id: 12, name: 'Laptop Stand',        category: 'Accessories',     price: 8000,  badge: 'Trending',   image: laptopstand,      slug: 'laptop-stand' },
 ]
-
-const newArrivals = getNewArrivals(4)
 
 const categories = [
   { label: 'Home Essentials',    sub: 'Kitchen · Bathroom · Lighting', to: '/shop/home-essentials', image: relaxationchair },
@@ -204,6 +203,18 @@ export default function HomePage() {
   const [isSliding, setIsSliding] = useState(false)
   const filters = ['All', 'Home Essentials', 'Skincare', 'Accessories']
   const filtered = activeFilter === 'All' ? bestSellers : bestSellers.filter(p => p.category === activeFilter)
+
+  // Fetch new arrivals from API
+  const { products: apiNewArrivals } = useNewArrivals(4)
+  const newArrivals = apiNewArrivals.map(p => ({
+    id:       p.id,
+    name:     p.name,
+    category: typeof p.category === 'string' ? p.category : (p.category as { name: string }).name,
+    price:    parseFloat(p.active_price),
+    badge:    p.badge_display,
+    image:    getCloudinaryUrl(p.primary_image?.image ?? null, 400),
+    slug:     p.slug,
+  }))
   const VISIBLE_CATS = 3
   const autoRef     = useRef<ReturnType<typeof setInterval> | null>(null)
   const touchStart  = useRef<number | null>(null)
