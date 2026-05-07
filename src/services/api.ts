@@ -352,6 +352,7 @@ export interface Product {
   rating:          string
   review_count:    number
   in_stock:        boolean
+  stock_count:     number
   is_new:          boolean
   added_date?:     string
 }

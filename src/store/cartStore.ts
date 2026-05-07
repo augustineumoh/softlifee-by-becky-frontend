@@ -9,6 +9,7 @@ export interface CartItem {
   slug:         string
   category:     string
   quantity:     number
+  maxStock:     number   // 0 = no limit tracked
   colorVariant?: string
 }
 
@@ -33,10 +34,17 @@ export const useCart = create<CartState>()(
       addItem: (item) => {
         const items = Array.isArray(get().items) ? get().items : []
         const existing = items.find(i => i.id === item.id)
+        const maxStock = item.maxStock ?? 0
         if (existing) {
-          set({ items: items.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i) })
+          const newQty = existing.quantity + 1
+          if (maxStock > 0 && newQty > maxStock) return  // at stock limit
+          set({ items: items.map(i =>
+            i.id === item.id
+              ? { ...i, quantity: newQty, maxStock: maxStock || i.maxStock }
+              : i
+          ) })
         } else {
-          set({ items: [...items, { ...item, quantity: 1 }] })
+          set({ items: [...items, { ...item, quantity: 1, maxStock }] })
         }
       },
 
@@ -50,7 +58,11 @@ export const useCart = create<CartState>()(
         if (qty <= 0) {
           set({ items: items.filter(i => i.id !== id) })
         } else {
-          set({ items: items.map(i => i.id === id ? { ...i, quantity: qty } : i) })
+          set({ items: items.map(i => {
+            if (i.id !== id) return i
+            const capped = (i.maxStock > 0 && qty > i.maxStock) ? i.maxStock : qty
+            return { ...i, quantity: capped }
+          }) })
         }
       },
 

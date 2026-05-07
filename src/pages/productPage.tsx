@@ -268,6 +268,7 @@ export default function ProductDetailPage() {
       image: cartImage,
       slug: product.slug,
       category: categoryName,
+      maxStock: product.stock_count,
       colorVariant: product.color_variants.length > 0 ? product.color_variants[activeColor].label : undefined,
     })
     setAddedToCart(true)
@@ -275,7 +276,7 @@ export default function ProductDetailPage() {
   }
 
   const handleBuyNow = () => {
-    addItem({ id: product.id, name: product.name, price: parseFloat(product.active_price), image: cartImage, slug: product.slug, category: categoryName })
+    addItem({ id: product.id, name: product.name, price: parseFloat(product.active_price), image: cartImage, slug: product.slug, category: categoryName, maxStock: product.stock_count })
     navigate('/checkout')
   }
 

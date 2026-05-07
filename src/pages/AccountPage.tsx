@@ -223,7 +223,7 @@ export default function AccountPage() {
   const { user, isAuthenticated, logout, loadUser } = useAuth()
   const { orders: ordersRaw, loading: ordersLoading, refetch: refetchOrders } = useOrders()
   const orders = Array.isArray(ordersRaw) ? ordersRaw : []
-  const { items: wishlistItemsRaw } = useWishlist()
+  const { items: wishlistItemsRaw, toggle: toggleWishlist } = useWishlist()
   const wishlistItems = Array.isArray(wishlistItemsRaw) ? wishlistItemsRaw : []
   const { addItem } = useCart()
   const [activeTab, setActiveTab] = useState('orders')
@@ -417,7 +417,7 @@ export default function AccountPage() {
                 <Link to="/shop" style={{ display: 'inline-block', fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', textDecoration: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px' }}>Explore Products</Link>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,200px), 1fr))', gap: '1.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,200px), 1fr))', gap: '1.25rem', alignItems: 'start' }}>
                 {wishlistItems.map(item => {
                   const imgSrc = item.product.primary_image?.image
                     ? getCloudinaryUrl(item.product.primary_image.image, 400)
@@ -443,7 +443,9 @@ export default function AccountPage() {
                       </Link>
                       <div style={{ padding: '0 0.9rem 0.9rem' }}>
                         <button
-                          onClick={() => {
+                          disabled={!item.product.in_stock}
+                          onClick={async () => {
+                            if (!item.product.in_stock) return
                             addItem({
                               id: item.product.id,
                               name: item.product.name,
@@ -451,12 +453,14 @@ export default function AccountPage() {
                               image: imgSrc,
                               slug: item.product.slug,
                               category: typeof item.product.category === 'string' ? item.product.category : item.product.category?.name || '',
+                              maxStock: item.product.stock_count ?? 0,
                             })
                             setAddedToCart(item.id)
-                            setTimeout(() => setAddedToCart(null), 2000)
+                            setTimeout(() => setAddedToCart(null), 1500)
+                            await toggleWishlist(item.product.slug)
                           }}
-                          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#FFF', background: isAdded ? '#16A34A' : '#8A4FB1', border: 'none', borderRadius: '8px', padding: '0.55rem 0', cursor: 'pointer', transition: 'background 0.25s' }}>
-                          {isAdded ? <><FiCheck size={12}/> Added!</> : <><FiShoppingBag size={12}/> Add to Cart</>}
+                          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#FFF', background: !item.product.in_stock ? 'rgba(138,79,177,0.35)' : isAdded ? '#16A34A' : '#8A4FB1', border: 'none', borderRadius: '8px', padding: '0.55rem 0', cursor: item.product.in_stock ? 'pointer' : 'not-allowed', transition: 'background 0.25s' }}>
+                          {!item.product.in_stock ? 'Out of Stock' : isAdded ? <><FiCheck size={12}/> Added!</> : <><FiShoppingBag size={12}/> Add to Cart</>}
                         </button>
                       </div>
                     </div>
