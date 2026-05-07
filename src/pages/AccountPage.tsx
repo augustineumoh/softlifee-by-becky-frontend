@@ -417,7 +417,7 @@ export default function AccountPage() {
                 <Link to="/shop" style={{ display: 'inline-block', fontFamily: '"Jost", sans-serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF', background: '#8A4FB1', textDecoration: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px' }}>Explore Products</Link>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,200px), 1fr))', gap: '1.25rem', alignItems: 'start' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,200px), 1fr))', gap: '1.25rem' }}>
                 {wishlistItems.map(item => {
                   const imgSrc = item.product.primary_image?.image
                     ? getCloudinaryUrl(item.product.primary_image.image, 400)
@@ -429,14 +429,14 @@ export default function AccountPage() {
                     <div key={item.id} style={{ background: '#FFF', borderRadius: '14px', overflow: 'hidden', border: '1px solid rgba(138,79,177,0.1)', transition: 'all 0.25s', display: 'flex', flexDirection: 'column' }}
                       onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor='#8A4FB1'; el.style.boxShadow='0 6px 24px rgba(138,79,177,0.1)'; el.style.transform='translateY(-2px)' }}
                       onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor='rgba(138,79,177,0.1)'; el.style.boxShadow='none'; el.style.transform='none' }}>
-                      <Link to={`/product/${item.product.slug}`} style={{ textDecoration: 'none' }}>
+                      <Link to={`/product/${item.product.slug}`} style={{ textDecoration: 'none', flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <div style={{ height: '180px', background: '#F0E8FA', overflow: 'hidden' }}>
                           {imgSrc
                             ? <img src={imgSrc} alt={item.product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }}/>
                             : <div style={{ width: '100%', height: '100%', background: '#F0E8FA' }}/>
                           }
                         </div>
-                        <div style={{ padding: '0.9rem 0.9rem 0.5rem' }}>
+                        <div style={{ padding: '0.9rem 0.9rem 0.5rem', flex: 1 }}>
                           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '4px', lineHeight: 1.2 }}>{item.product.name}</p>
                           <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.88rem', fontWeight: 700, color: '#8A4FB1' }}>{formatPrice(item.product.active_price || item.product.price)}</p>
                         </div>
