@@ -18,33 +18,16 @@ const NIGERIAN_STATES = [
   'Yobe','Zamfara',
 ]
 
-// Rates based on distance from Uyo, Akwa Ibom (store location)
-const DELIVERY_RATES: Record<string, number> = {
-  // Zone 1 — same state
-  'Akwa Ibom': 1000,
-  // Zone 2 — neighbouring states
-  'Cross River': 1500, 'Rivers': 1500, 'Bayelsa': 1800,
-  // Zone 3 — South-South / South-East
-  'Abia': 2000, 'Imo': 2000, 'Delta': 2200,
-  'Anambra': 2500, 'Enugu': 2500, 'Ebonyi': 2500,
-  // Zone 4 — South-West / North-Central
-  'Edo': 2800, 'Lagos': 3500, 'Ogun': 3500, 'Oyo': 3500,
-  'Osun': 3500, 'Ondo': 3500, 'Ekiti': 3500,
-  'Benue': 3000, 'Kogi': 3000, 'Kwara': 3500,
-  'FCT': 3500, 'Niger': 4000, 'Plateau': 3500, 'Nasarawa': 3500,
-  // Zone 5 — North-East
-  'Adamawa': 4000, 'Bauchi': 4500, 'Borno': 5000,
-  'Gombe': 4500, 'Taraba': 4000, 'Yobe': 5000,
-  // Zone 6 — North-West
-  'Jigawa': 5000, 'Kaduna': 4500, 'Kano': 5000,
-  'Katsina': 5000, 'Kebbi': 5000, 'Sokoto': 5500, 'Zamfara': 5000,
-}
-const DEFAULT_DELIVERY = 3500
-const FREE_THRESHOLD   = 100000
+// Zone 1 — within Uyo LGA:              ₦2,000
+// Zone 2 — outside Uyo, Akwa Ibom state: ₦3,000
+// Zone 3 — outside Akwa Ibom (Nigeria):  ₦5,000
 
-function getDeliveryFee(state: string, subtotal: number): number {
-  if (subtotal >= FREE_THRESHOLD) return 0
-  return DELIVERY_RATES[state] ?? DEFAULT_DELIVERY
+function getDeliveryFee(state: string, city: string): number {
+  if (state === 'Akwa Ibom') {
+    if (city.toLowerCase().includes('uyo')) return 2000
+    return 3000
+  }
+  return 5000
 }
 
 const STEPS = ['Delivery', 'Payment', 'Review']
@@ -93,7 +76,7 @@ export default function CheckoutPage() {
 
   const subtotal     = items.reduce((s, i) => s + i.price * i.quantity, 0)
   const discountAmt  = discount ? Number(discount.discount_amount) : 0
-  const deliveryFee  = getDeliveryFee(delivery.state, subtotal - discountAmt)
+  const deliveryFee  = getDeliveryFee(delivery.state, delivery.city)
   const total        = subtotal - discountAmt + deliveryFee
 
   const updateDelivery = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -473,14 +456,6 @@ export default function CheckoutPage() {
                   </p>
                 </div>
               )}
-              {delivery.state && deliveryFee > 0 && subtotal - discountAmt < FREE_THRESHOLD && (
-                <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#FAF7FF', borderRadius: '8px', border: '1px solid rgba(138,79,177,0.1)' }}>
-                  <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', color: '#5B21B6', margin: 0, lineHeight: 1.5 }}>
-                    🎁 Add <strong style={{ color: '#8A4FB1' }}>{formatPrice(FREE_THRESHOLD - (subtotal - discountAmt))}</strong> more for free delivery!
-                  </p>
-                </div>
-              )}
-
               {/* Security badges */}
               <div style={{ marginTop: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                 <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', color: 'rgba(26,26,46,0.35)', letterSpacing: '0.08em' }}>🔒 Secured by Paystack</span>
