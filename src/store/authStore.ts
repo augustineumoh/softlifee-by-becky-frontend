@@ -31,12 +31,30 @@ export const useAuth = create<AuthState>()(
           tokens.set(res.tokens.access, res.tokens.refresh)
           set({ user: res.user, isAuthenticated: true, isLoading: false })
 
-          // Restore cart saved on last logout for this user
+          // Restore cart saved on last logout for this user, preserving quantities
           const saved = localStorage.getItem(`softlifee-cart-user-${res.user.id}`)
           if (saved) {
             try {
               const savedItems: import('./cartStore').CartItem[] = JSON.parse(saved)
-              savedItems.forEach(item => useCart.getState().addItem(item))
+              if (Array.isArray(savedItems) && savedItems.length > 0) {
+                const current = useCart.getState().items
+                if (current.length === 0) {
+                  // No guest cart — restore saved items directly with their quantities
+                  useCart.setState({ items: savedItems })
+                } else {
+                  // Guest cart exists — merge, accumulating quantities for the same product
+                  const merged = [...current]
+                  for (const s of savedItems) {
+                    const idx = merged.findIndex(i => i.id === s.id)
+                    if (idx >= 0) {
+                      merged[idx] = { ...merged[idx], quantity: merged[idx].quantity + s.quantity }
+                    } else {
+                      merged.push(s)
+                    }
+                  }
+                  useCart.setState({ items: merged })
+                }
+              }
               localStorage.removeItem(`softlifee-cart-user-${res.user.id}`)
             } catch {}
           }

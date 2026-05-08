@@ -193,8 +193,8 @@ export default function Navbar() {
           .sl-nav-inner { padding: 0 0.75rem !important; }
           .sl-nav-icons { gap: 0.5rem !important; }
           .sl-nav-logo  {
-            width: clamp(200px, 58vw, 260px) !important;
-            max-width: 58vw !important;
+            width: clamp(240px, 72vw, 320px) !important;
+            max-width: 72vw !important;
           }
         }
       `}</style>

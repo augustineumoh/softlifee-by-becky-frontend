@@ -1,19 +1,25 @@
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useLocation } from 'react-router-dom'
 import { FiCheck, FiPackage, FiMail } from 'react-icons/fi'
 import { useVerifyPayment } from '../hooks/useOrders'
+import type { Order } from '../services/api'
 
 const formatPrice = (n: string | number) => '₦' + Number(n).toLocaleString('en-NG')
 
 export default function OrderSuccessPage() {
   const [params]  = useSearchParams()
+  const location  = useLocation()
   const reference = params.get('reference')
   const orderNum  = params.get('order')
   const method    = params.get('method')
 
-  const { order, loading } = useVerifyPayment(reference)
+  const isPOD = method === 'pod'
+
+  // POD orders pass order data as route state (no Paystack reference to verify)
+  const stateOrder = (location.state as any)?.order as Order | undefined
+  const { order: verifiedOrder, loading } = useVerifyPayment(reference)
+  const order = verifiedOrder ?? stateOrder ?? null
 
   const displayOrderNum = order?.order_number || orderNum || '—'
-  const isPOD = method === 'pod'
 
   return (
     <div style={{ minHeight: '100vh', background: '#FAF7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '5rem 1.5rem 2rem' }}>

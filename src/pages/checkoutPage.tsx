@@ -109,7 +109,7 @@ export default function CheckoutPage() {
 
     if (paymentMethod === 'pod') {
       clearCart()
-      navigate(`/order-success?order=${res.order.order_number}&method=pod`)
+      navigate(`/order-success?order=${res.order.order_number}&method=pod`, { state: { order: res.order } })
       return
     }
 
