@@ -54,25 +54,38 @@ function ProductCard({ product }: { product: Product }) {
   const { toggle, isWishlisted } = useWishlist()
   const [adding, setAdding]      = useState(false)
   const [hovered, setHovered]    = useState(false)
+  const [touched, setTouched]    = useState(false)
+  const showOverlay = hovered || touched
   const wishlisted = isWishlisted(product.slug)
   const imgSrc     = getCloudinaryUrl(product.primary_image?.image, 500)
   const badge      = BADGE_COLORS[product.badge] || { bg: '#8A4FB1', color: '#FFF' }
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     if (adding) return
     setAdding(true)
+    setTouched(false)
     addItem({ id: product.id, name: product.name, price: Number(product.price), image: imgSrc, slug: product.slug, category: typeof product.category === 'string' ? product.category : (product.category as any)?.name || '' })
     setTimeout(() => setAdding(false), 1500)
   }
 
+  // On touch devices (hovered never fires) — first tap reveals overlay,
+  // second tap dismisses it; tapping the overlay adds to cart.
+  const handleImageClick = (e: React.MouseEvent) => {
+    if (!hovered) {
+      e.preventDefault()
+      setTouched(t => !t)
+    }
+  }
+
   return (
     <Link to={`/product/${product.slug}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column' }}
-      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
-      <div style={{ background: '#FFFFFF', borderRadius: '14px', overflow: 'hidden', border: `1px solid ${hovered ? '#8A4FB1' : 'rgba(138,79,177,0.1)'}`, transition: 'all 0.3s', boxShadow: hovered ? '0 12px 40px rgba(138,79,177,0.14)' : '0 2px 8px rgba(138,79,177,0.04)', transform: hovered ? 'translateY(-4px)' : 'none', position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      onMouseEnter={() => setHovered(true)} onMouseLeave={() => { setHovered(false); setTouched(false) }}>
+      <div style={{ background: '#FFFFFF', borderRadius: '14px', overflow: 'hidden', border: `1px solid ${showOverlay ? '#8A4FB1' : 'rgba(138,79,177,0.1)'}`, transition: 'all 0.3s', boxShadow: showOverlay ? '0 12px 40px rgba(138,79,177,0.14)' : '0 2px 8px rgba(138,79,177,0.04)', transform: hovered ? 'translateY(-4px)' : 'none', position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}>
 
         {/* Image wrapper with aspect ratio */}
-        <div style={{ position: 'relative', paddingTop: '120%', overflow: 'hidden', background: '#F0E8FA', flexShrink: 0 }}>
+        <div onClick={handleImageClick} style={{ position: 'relative', paddingTop: '120%', overflow: 'hidden', background: '#F0E8FA', flexShrink: 0 }}>
           <div style={{ position: 'absolute', inset: 0 }}>
             {imgSrc
               ? <img src={imgSrc} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transition: 'transform 0.6s ease', transform: hovered ? 'scale(1.06)' : 'scale(1)' }} />
@@ -102,9 +115,9 @@ function ProductCard({ product }: { product: Product }) {
             <FiHeart size={14} style={{ fill: wishlisted ? '#BE123C' : 'none' }} />
           </button>
 
-          {/* Quick add — slides up on hover (desktop), always partially visible on mobile */}
+          {/* Quick add — slides up on hover (desktop) or tap (mobile) */}
           <div onClick={handleAdd}
-            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0.8rem', background: adding ? 'rgba(22,163,74,0.94)' : 'rgba(26,26,46,0.9)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', cursor: product.in_stock ? 'pointer' : 'default', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.3s ease', zIndex: 2 }}>
+            style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0.8rem', background: adding ? 'rgba(22,163,74,0.94)' : 'rgba(26,26,46,0.9)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', cursor: product.in_stock ? 'pointer' : 'default', transform: showOverlay ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.3s ease', zIndex: 2 }}>
             <FiShoppingBag size={13} color="#FFF" />
             <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF' }}>
               {adding ? '✓ Added!' : 'Quick Add'}
@@ -136,13 +149,6 @@ function ProductCard({ product }: { product: Product }) {
             )}
           </div>
 
-          {/* Mobile add to cart button */}
-          <button onClick={handleAdd} disabled={!product.in_stock}
-            className="sl-mobile-add-btn"
-            style={{ marginTop: '0.75rem', width: '100%', padding: '0.65rem', background: adding ? '#16A34A' : '#8A4FB1', color: '#FFF', border: 'none', borderRadius: '8px', fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', cursor: product.in_stock ? 'pointer' : 'not-allowed', opacity: product.in_stock ? 1 : 0.5, transition: 'background 0.2s', display: 'none', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-            <FiShoppingBag size={12} />
-            {adding ? 'Added!' : 'Add to Cart'}
-          </button>
         </div>
       </div>
     </Link>
@@ -521,7 +527,6 @@ export default function ShopPage() {
           .sl-mobile-toolbar  { display: flex !important; }
           .sl-search-label    { display: none; }
           .sl-shop-body { padding-left: 1rem !important; padding-right: 1rem !important; }
-          .sl-mobile-add-btn  { display: flex !important; }
         }
 
         @media (min-width: 769px) {

@@ -197,25 +197,35 @@ function useInView(threshold = 0.1) {
 // ── Product Card ─────────────────────────────────────────────────────────────
 function ProductCard({ product, delay = 0, rank }: { product: NewArrivalItem; delay?: number; rank?: number }) {
   const [hovered, setHovered]       = useState(false)
+  const [touched, setTouched]       = useState(false)
   const [wishlisted, setWishlisted] = useState(false)
   const [adding, setAdding]         = useState(false)
   const { ref, visible }            = useInView()
   const left                        = daysLeft(product.addedDate)
   const { addItem }                 = useCart()
+  const showOverlay = hovered || touched
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    setTouched(false)
     addItem({ id: product.id, name: product.name, price: product.price, image: product.image, slug: product.slug, category: product.category })
     setAdding(true)
     setTimeout(() => setAdding(false), 1500)
   }
 
+  const handleImageClick = (e: React.MouseEvent) => {
+    if (!hovered) {
+      e.preventDefault()
+      setTouched(t => !t)
+    }
+  }
+
   return (
     <div ref={ref} style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(36px)', transition: `opacity 0.65s ease ${delay}s, transform 0.65s cubic-bezier(0.22,1,0.36,1) ${delay}s` }}>
-      <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ cursor: 'pointer' }}>
-        <div style={{ position: 'relative', overflow: 'hidden', background: '#F0E8FA', aspectRatio: '3/4', marginBottom: '0.9rem', borderRadius: '6px' }}>
-          <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94)', transform: hovered ? 'scale(1.07)' : 'scale(1)' }} />
+      <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => { setHovered(false); setTouched(false) }} style={{ cursor: 'pointer' }}>
+        <div onClick={handleImageClick} style={{ position: 'relative', overflow: 'hidden', background: '#F0E8FA', aspectRatio: '3/4', marginBottom: '0.9rem', borderRadius: '6px' }}>
+          <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94)', transform: showOverlay ? 'scale(1.07)' : 'scale(1)' }} />
 
           {/* Rank badge top-left */}
           {rank && rank <= 3 && (
@@ -237,8 +247,8 @@ function ProductCard({ product, delay = 0, rank }: { product: NewArrivalItem; de
             </svg>
           </button>
 
-          {/* Add to cart */}
-          <div onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.93)', backdropFilter: 'blur(4px)', padding: '0.8rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}>
+          {/* Slides up on hover (desktop) or tap (mobile) */}
+          <div onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.93)', backdropFilter: 'blur(4px)', padding: '0.8rem', transform: showOverlay ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#FFF' }}>{adding ? '✓ Added!' : 'Add to Cart'}</span>
           </div>
@@ -252,11 +262,6 @@ function ProductCard({ product, delay = 0, rank }: { product: NewArrivalItem; de
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.05rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '4px', lineHeight: 1.2 }}>{product.name}</p>
           <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.88rem', fontWeight: 700, color: '#8A4FB1' }}>{formatPrice(product.price)}</p>
         </Link>
-        <button onClick={handleAdd} className="na-mobile-add-btn"
-          style={{ display: 'none', width: '100%', marginTop: '0.6rem', padding: '0.65rem', background: adding ? '#16A34A' : '#8A4FB1', color: '#FFF', border: 'none', borderRadius: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'background 0.2s' }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          {adding ? '✓ Added!' : 'Add to Cart'}
-        </button>
       </div>
     </div>
   )
@@ -551,7 +556,6 @@ export default function NewArrivalsPage() {
         @keyframes na-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         @media (max-width: 768px) {
           div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
-          .na-mobile-add-btn { display: flex !important; }
         }
       `}</style>
     </div>

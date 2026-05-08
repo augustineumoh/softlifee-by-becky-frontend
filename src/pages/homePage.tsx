@@ -123,9 +123,11 @@ const perks = [
 // ── Product Card ──────────────────────────────────────────────────────────────
 function ProductCard({ product, delay = 0 }: { product: typeof bestSellers[0]; delay?: number }) {
   const [hovered, setHovered]       = useState(false)
+  const [touched, setTouched]       = useState(false)
   const [wishlisted, setWishlisted] = useState(false)
   const [adding, setAdding]         = useState(false)
   const { addItem }                 = useCart()
+  const showOverlay = hovered || touched
   const badgeColors: Record<string, string> = {
     'Best Seller': '#8A4FB1', 'Top Rated': '#5B21B6',
     'New': '#D4AF37', 'Trending': '#1A1A2E', 'Premium': '#C4A8D4',
@@ -134,25 +136,33 @@ function ProductCard({ product, delay = 0 }: { product: typeof bestSellers[0]; d
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    setTouched(false)
     addItem({ id: product.id, name: product.name, price: product.price, image: product.image, slug: product.slug, category: product.category })
     setAdding(true)
     setTimeout(() => setAdding(false), 1500)
   }
 
+  const handleImageClick = (e: React.MouseEvent) => {
+    if (!hovered) {
+      e.preventDefault()
+      setTouched(t => !t)
+    }
+  }
+
   return (
     <Reveal delay={delay}>
-      <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ cursor: 'pointer' }}>
-        <div style={{ position: 'relative', overflow: 'hidden', background: '#F0E8FA', aspectRatio: '3/4', marginBottom: '0.75rem' }}>
-          <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)', transform: hovered ? 'scale(1.06)' : 'scale(1)' }} />
+      <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => { setHovered(false); setTouched(false) }} style={{ cursor: 'pointer' }}>
+        <div onClick={handleImageClick} style={{ position: 'relative', overflow: 'hidden', background: '#F0E8FA', aspectRatio: '3/4', marginBottom: '0.75rem' }}>
+          <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)', transform: showOverlay ? 'scale(1.06)' : 'scale(1)' }} />
           <div style={{ position: 'absolute', top: '10px', left: '10px', background: badgeColors[product.badge] || '#1A1A2E', color: '#FFF', fontFamily: '"Jost", sans-serif', fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '3px 8px' }}>{product.badge}</div>
-          <button onClick={e => { e.preventDefault(); setWishlisted(w => !w) }}
+          <button onClick={e => { e.preventDefault(); e.stopPropagation(); setWishlisted(w => !w) }}
             style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(255,255,255,0.9)', border: 'none', cursor: 'pointer', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill={wishlisted ? '#8A4FB1' : 'none'} stroke={wishlisted ? '#8A4FB1' : '#1A1A2E'} strokeWidth="1.8">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
           </button>
-          {/* Desktop: slide-up on hover */}
-          <div onClick={handleAdd} className="hp-add-hover" style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.92)', backdropFilter: 'blur(4px)', padding: '0.85rem', transform: hovered ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}>
+          {/* Slides up on hover (desktop) or tap (mobile) */}
+          <div onClick={handleAdd} style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: adding ? 'rgba(22,163,74,0.92)' : 'rgba(26,26,46,0.92)', backdropFilter: 'blur(4px)', padding: '0.85rem', transform: showOverlay ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             <span style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#FFF' }}>{adding ? '✓ Added!' : 'Add to Cart'}</span>
           </div>
@@ -162,11 +172,6 @@ function ProductCard({ product, delay = 0 }: { product: typeof bestSellers[0]; d
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 'clamp(1rem,2vw,1.15rem)', fontWeight: 600, color: '#1A1A2E', marginBottom: '4px', lineHeight: 1.2 }}>{product.name}</p>
           <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.88rem', fontWeight: 700, color: '#1A1A2E' }}>{formatPrice(product.price)}</p>
         </Link>
-        {/* Mobile: always-visible add button */}
-        <button onClick={handleAdd} className="hp-add-mobile"
-          style={{ display: 'none', width: '100%', marginTop: '0.5rem', padding: '0.65rem', background: adding ? '#16A34A' : '#8A4FB1', color: '#FFF', border: 'none', cursor: 'pointer', fontFamily: '"Jost", sans-serif', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', borderRadius: '3px', transition: 'background 0.25s' }}>
-          {adding ? '✓ Added!' : 'Add to Cart'}
-        </button>
       </div>
     </Reveal>
   )
@@ -506,7 +511,6 @@ export default function HomePage() {
 
         @media (max-width: 768px) {
           section[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
-          .hp-add-mobile { display: flex !important; }
         }
       `}</style>
     </div>
