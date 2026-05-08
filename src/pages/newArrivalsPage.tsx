@@ -252,6 +252,11 @@ function ProductCard({ product, delay = 0, rank }: { product: NewArrivalItem; de
           <p style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.05rem', fontWeight: 600, color: '#1A1A2E', marginBottom: '4px', lineHeight: 1.2 }}>{product.name}</p>
           <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.88rem', fontWeight: 700, color: '#8A4FB1' }}>{formatPrice(product.price)}</p>
         </Link>
+        <button onClick={handleAdd} className="na-mobile-add-btn"
+          style={{ display: 'none', width: '100%', marginTop: '0.6rem', padding: '0.65rem', background: adding ? '#16A34A' : '#8A4FB1', color: '#FFF', border: 'none', borderRadius: '6px', fontFamily: '"Jost", sans-serif', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'background 0.2s' }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          {adding ? '✓ Added!' : 'Add to Cart'}
+        </button>
       </div>
     </div>
   )
@@ -546,6 +551,7 @@ export default function NewArrivalsPage() {
         @keyframes na-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         @media (max-width: 768px) {
           div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+          .na-mobile-add-btn { display: flex !important; }
         }
       `}</style>
     </div>

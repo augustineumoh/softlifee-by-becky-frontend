@@ -506,6 +506,7 @@ export default function HomePage() {
 
         @media (max-width: 768px) {
           section[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+          .hp-add-mobile { display: flex !important; }
         }
       `}</style>
     </div>

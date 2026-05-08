@@ -520,8 +520,8 @@ export default function ShopPage() {
           .sl-desktop-count   { display: none; }
           .sl-mobile-toolbar  { display: flex !important; }
           .sl-search-label    { display: none; }
-          /* Tighter outer padding on mobile */
           .sl-shop-body { padding-left: 1rem !important; padding-right: 1rem !important; }
+          .sl-mobile-add-btn  { display: flex !important; }
         }
 
         @media (min-width: 769px) {
