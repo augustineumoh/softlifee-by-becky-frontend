@@ -7,15 +7,15 @@ const faqs = [
     items: [
       {
         q: 'How is the delivery fee calculated?',
-        a: 'Delivery fees are calculated based on your location. As a Uyo-based store, rates start from ₦1,000 for Akwa Ibom, ₦1,500–₦1,800 for neighbouring states (Rivers, Cross River, Bayelsa), up to ₦5,500 for far northern states. The exact fee will be shown at checkout once you enter your delivery address.',
+        a: 'We charge a simple flat-rate delivery fee based on your location — no surprises at checkout. Within Uyo (Akwa Ibom): ₦2,000. Outside Uyo but still within Akwa Ibom State: ₦3,000. All other states in Nigeria: ₦5,000. The exact fee is calculated and displayed automatically once you enter your delivery address at checkout.',
       },
       {
         q: 'How long does delivery take?',
-        a: 'Akwa Ibom: 1–2 business days. South-South region (Rivers, Cross River, Bayelsa, Delta): 2–3 business days. South-East & South-West: 3–4 business days. North-Central, North-East & North-West: 4–6 business days. Delivery timelines may vary due to logistics factors outside our control.',
+        a: 'Within Uyo & Akwa Ibom: 1–2 business days. Lagos & other southern states: 2–3 business days. Other states across Nigeria: 3–5 business days. Delivery timelines may vary due to logistics factors outside our control.',
       },
       {
         q: 'Do you offer free delivery?',
-        a: 'Yes! Orders above ₦100,000 qualify for free delivery nationwide. For orders below ₦100,000, a delivery fee applies based on your state/location.',
+        a: 'We do not currently offer free delivery. Our flat-rate fees are kept as low as possible — ₦2,000 within Uyo, ₦3,000 within Akwa Ibom, and ₦5,000 for the rest of Nigeria. Follow our social media pages for any promotional free-delivery offers.',
       },
       {
         q: 'Can I track my order?',
@@ -49,15 +49,15 @@ const faqs = [
     items: [
       {
         q: 'What payment methods do you accept?',
-        a: 'We accept all major cards (Visa, Mastercard, Verve) and bank transfers, all processed securely through Paystack. Your payment information is never stored on our servers.',
+        a: 'We accept card payments (Visa, Mastercard, Verve), bank transfers, USSD, and Pay on Delivery (POD) for eligible orders. Online payments are processed securely through Paystack. Your payment information is never stored on our servers.',
       },
       {
         q: 'Is it safe to pay on this website?',
-        a: 'Yes. All payments are processed through Paystack, a leading and PCI-DSS compliant payment gateway. Your card details are encrypted and never shared with us.',
+        a: 'Yes. All online payments are processed through Paystack, a leading PCI-DSS compliant payment gateway. Your card details are encrypted and never shared with us.',
       },
       {
         q: 'Can I pay on delivery?',
-        a: 'We currently do not offer payment on delivery. All orders must be paid in full before dispatch.',
+        a: 'Yes! We offer Pay on Delivery (POD). Simply select "Pay on Delivery" at checkout and our delivery agent will collect payment when your order arrives. POD is available across Nigeria.',
       },
       {
         q: 'Do you accept discount codes?',
