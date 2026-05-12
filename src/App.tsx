@@ -23,6 +23,7 @@ import ReturnPolicyPage from './pages/ReturnPolicyPage'
 import FAQPage from './pages/FAQPage'
 import UnsubscribePage from './pages/UnsubscribePage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 
 
@@ -62,6 +63,8 @@ export default function App() {
           <Route path="/account/edit"                 element={<AccountEditPage />} />
           <Route path="/account/orders/:orderNumber"  element={<OrderDetailPage />} />
           <Route path="/returns-policy"               element={<ReturnPolicyPage />} />
+          <Route path="/privacy-policy"              element={<PrivacyPolicyPage />} />
+          <Route path="/privacy"                     element={<PrivacyPolicyPage />} />
           <Route path="/faqs"                         element={<FAQPage />} />
           <Route path="/unsubscribe"                  element={<UnsubscribePage />} />
           <Route path="/forgot-password"              element={<ForgotPasswordPage />} />
