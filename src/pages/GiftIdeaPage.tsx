@@ -169,7 +169,7 @@ function MiniCard({ product }: { product: typeof giftProducts['her'][0] }) {
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    addItem({ id: slugToId(product.slug), name: product.name, price: product.price, image: product.image, slug: product.slug, category: '' })
+    addItem({ id: slugToId(product.slug), name: product.name, price: product.price, image: product.image, slug: product.slug, category: '', maxStock: 0 })
     setAdding(true)
     setTimeout(() => setAdding(false), 1500)
   }
