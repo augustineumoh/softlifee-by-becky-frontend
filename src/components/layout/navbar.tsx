@@ -184,8 +184,8 @@ export default function Navbar() {
           .sl-nav-logo-link { flex-shrink: 1 !important; min-width: 0; overflow: hidden; }
           .sl-nav-logo  {
             height: auto !important;
-            width: clamp(220px, 62vw, 300px) !important;
-            max-width: 62vw !important;
+            width: clamp(260px, 72vw, 360px) !important;
+            max-width: 72vw !important;
             object-fit: contain !important;
           }
         }
@@ -193,8 +193,8 @@ export default function Navbar() {
           .sl-nav-inner { padding: 0 0.75rem !important; }
           .sl-nav-icons { gap: 0.5rem !important; }
           .sl-nav-logo  {
-            width: clamp(240px, 72vw, 320px) !important;
-            max-width: 72vw !important;
+            width: clamp(280px, 82vw, 380px) !important;
+            max-width: 82vw !important;
           }
         }
       `}</style>
