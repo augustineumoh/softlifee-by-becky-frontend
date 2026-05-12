@@ -323,7 +323,7 @@ export default function GiftIdeasPage() {
           <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontWeight: 700, fontSize: 'clamp(3rem,6vw,5.5rem)', color: '#FFFFFF', lineHeight: 1, margin: '0 0 0.3rem 0' }}>The Art of</h1>
           <h1 style={{ fontFamily: '"Cormorant Garamond", serif', fontStyle: 'italic', fontWeight: 700, fontSize: 'clamp(3rem,6vw,5.5rem)', color: '#D4AF37', lineHeight: 1, margin: '0 0 1.5rem 0' }}>Gifting.</h1>
           <p style={{ fontFamily: '"Jost", sans-serif', fontSize: '0.95rem', fontWeight: 300, color: 'rgba(255,255,255,0.6)', lineHeight: 1.8, marginBottom: '2.5rem', maxWidth: '440px' }}>
-            Curated with intention. Every gift in this guide is handpicked to make someone feel truly seen — whether it's a treat for her, him, the home, or a luxury splurge.
+            Curated with intention. Every gift in this guide is handpicked to make someone feel truly seen — whether it's a treat for a loved one, the home, or a luxury splurge.
           </p>
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <button onClick={e => handleNavClick(e, 'her')}
